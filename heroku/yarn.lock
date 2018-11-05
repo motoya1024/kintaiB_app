@@ -139,10 +139,10 @@
     "true-myth" "^2.1.5"
     valid-url "^1.0.9"
 
-"@heroku-cli/plugin-certs-v5@^7.18.0":
-  version "7.18.0"
-  resolved "https://registry.yarnpkg.com/@heroku-cli/plugin-certs-v5/-/plugin-certs-v5-7.18.0.tgz#569cc1d3970837671d3d671edc9ed92d84ff3db2"
-  integrity sha512-L0rmE62oJFLIapDxKR3yjAH0DUPFisnPzuTpUbKsZpwn5Tqm6DD752w/usLAPPdoXYO5KDY2sp24Hb45MhygxA==
+"@heroku-cli/plugin-certs-v5@^7.18.4":
+  version "7.18.4"
+  resolved "https://registry.yarnpkg.com/@heroku-cli/plugin-certs-v5/-/plugin-certs-v5-7.18.4.tgz#4319895d73b501332c4753a1751fdd4071f8f6a1"
+  integrity sha512-DaBirG+1Mkq2SaOHt+GlxwNI+D1PZyAK2kD1x8WsdJRJVcUd6Z8kxavfKyr0g7+DbHSta3AA6pfc8QeEzlkYFA==
   dependencies:
     co "4.6.0"
     co-wait "0.0.0"
@@ -217,10 +217,10 @@
     lodash "^4.17.11"
     shell-quote "^1.6.1"
 
-"@heroku-cli/plugin-container-registry-v5@^7.18.0":
-  version "7.18.0"
-  resolved "https://registry.yarnpkg.com/@heroku-cli/plugin-container-registry-v5/-/plugin-container-registry-v5-7.18.0.tgz#1cc5a7ab07ea2811261f30168c55708d14bdf0e8"
-  integrity sha512-K2LIVLQUJinsgrCGEWafsumqWpSMCsnxGi7/cQ+MTTjq+aOJC5NPiBgWU+VDO3LMT6lU1sum0wm9H+ajGQeQYg==
+"@heroku-cli/plugin-container-registry-v5@^7.18.4":
+  version "7.18.4"
+  resolved "https://registry.yarnpkg.com/@heroku-cli/plugin-container-registry-v5/-/plugin-container-registry-v5-7.18.4.tgz#97335da5cf4d05c754c0619e204a1048e40679dd"
+  integrity sha512-TjnHNE20ZlIBEGzVpQJol5dZeWqOytJTWDjMDzl8eVRO1y9/JJFuDuLAfxaUFBl/WUwLsQssPXUXQGCSI3P/aw==
   dependencies:
     glob "^7.1.3"
     heroku-cli-util "^8.0.10"
