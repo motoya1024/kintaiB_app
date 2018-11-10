@@ -291,10 +291,10 @@
     strip-eof "^1.0.0"
     tunnel-ssh "^4.1.4"
 
-"@heroku-cli/plugin-pipelines-v5@^7.18.0":
-  version "7.18.0"
-  resolved "https://registry.yarnpkg.com/@heroku-cli/plugin-pipelines-v5/-/plugin-pipelines-v5-7.18.0.tgz#069b509042746f7220a53e8d24deab49f2aa68a5"
-  integrity sha512-J/JYT/JHzC6wirZzAAhRAvQt6Pr5AdATNt9XIznfwmrHZ49NepKbPp4Czb1q3XUwpHEyIkmyYQ1YYOys4iBo/w==
+"@heroku-cli/plugin-pipelines-v5@^7.18.5":
+  version "7.18.5"
+  resolved "https://registry.yarnpkg.com/@heroku-cli/plugin-pipelines-v5/-/plugin-pipelines-v5-7.18.5.tgz#16418a964f44bb769803351e543928a2f9e7bd6d"
+  integrity sha512-lznZjZcpLxbfL+3AGGxgH64VksUnJl+SBM6Ox3X0hMdqjyMUWD8ad9RBkztZzJH/L6lKyoP7iTjBOWZoAguFMw==
   dependencies:
     "@heroku-cli/command" "^8.2.0"
     bluebird "^3.5.2"
