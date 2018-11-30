@@ -9,7 +9,8 @@ class UsersController < ApplicationController
   end
   
   def index
-    @users = User.where(activated: true).paginate(page: params[:page])
+    #@users = User.where(activated: true).paginate(page: params[:page])
+    @users = User.paginate(page: params[:page])
   end
   
   def show
@@ -21,8 +22,8 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)    # 実装は終わっていないことに注意!
     if @user.save
-       @user.send_activation_email
-       flash[:info] = "Please check your email to activate your account."
+       #@user.send_activation_email
+       #flash[:info] = "Please check your email to activate your account."
        redirect_to root_url
       
        #log_in @user
@@ -45,7 +46,7 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
     if @user.update_attributes(user_params)
-      flash[:success] = "Profile updated"
+      flash[:success] = "プロフィールを更新しました。"
       redirect_to @user
     else
       render 'edit'
@@ -54,10 +55,10 @@ class UsersController < ApplicationController
   
   def destroy
     User.find(params[:id]).destroy
-    flash[:success] = "User deleted"
+    flash[:success] = "ユーザー情報を消去しました。"
     redirect_to users_url
   end
-
+  
   def following
     @title = "Following"
     @user  = User.find(params[:id])
@@ -76,7 +77,7 @@ class UsersController < ApplicationController
 
   private
     def user_params
-        params.require(:user).permit(:name, :email, :password,
+        params.require(:user).permit(:name, :email, :password, :department,
                                      :password_confirmation)
     end
     
@@ -84,7 +85,7 @@ class UsersController < ApplicationController
     def logged_in_user
       unless logged_in?
         store_location
-        flash[:danger] = "Please log in."
+        flash[:danger] = "ログインして下さい。"
         redirect_to login_url
       end
     end

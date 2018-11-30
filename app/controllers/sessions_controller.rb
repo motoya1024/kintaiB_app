@@ -6,19 +6,19 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
-      if user.activated?
+     # if user.activated?
         log_in user
         params[:session][:remember_me] == '1' ? remember(user) : forget(user)
         redirect_back_or user
-      else
+=begin else
         message  = "Account not activated. "
         message += "Check your email for the activation link."
         flash[:warning] = message
         redirect_to root_url
-      end
+=end  end
     else
       # エラーメッセージを作成する
-      flash.now[:danger] = 'Invalid email/password combination' # 本当は正しくない
+      flash.now[:danger] = 'メールアドレスとパスワードが正しくありません。' # 本当は正しくない
       render 'new'
     end
   end

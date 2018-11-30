@@ -28,7 +28,10 @@ body {
 }
 
 .jumbotron {
+ /*
   background-color: rgba(255,165,0,0);
+  */
+  background-color: $gray-medium-light;
 }
 
 section {
@@ -44,6 +47,10 @@ textarea {
   h1 {
     margin-bottom: 10px;
   }
+}
+
+.signup{
+  margin-top:10px;
 }
 
 /* typography */
