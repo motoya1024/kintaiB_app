@@ -16,7 +16,7 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
     @microposts = @user.microposts.paginate(page: params[:page])
-    redirect_to root_url and return unless @user.activated?
+   # redirect_to root_url and return unless @user.activated?
   end
   
   def create
@@ -24,6 +24,7 @@ class UsersController < ApplicationController
     if @user.save
        #@user.send_activation_email
        #flash[:info] = "Please check your email to activate your account."
+       flash[:success] = "プロフィールを更新しました。"
        redirect_to root_url
       
        #log_in @user
