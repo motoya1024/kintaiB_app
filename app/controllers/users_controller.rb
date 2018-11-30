@@ -19,6 +19,23 @@ class UsersController < ApplicationController
    # redirect_to root_url and return unless @user.activated?
   end
   
+  def information
+    @user = User.find(current_user.id)
+  
+  end
+  
+  def informationupdate
+    
+    @user = User.find(current_user.id)
+    if @user.update_attributes(information_params)
+      flash[:success] = "基本情報を更新しました。"
+      redirect_to root_path
+    else
+      render 'information'
+    end
+  
+  end
+  
   def create
     @user = User.new(user_params)    # 実装は終わっていないことに注意!
     if @user.save
@@ -74,12 +91,14 @@ class UsersController < ApplicationController
     render 'show_follow'
   end
 
-
-
   private
     def user_params
         params.require(:user).permit(:name, :email, :password, :department,
                                      :password_confirmation)
+    end
+    
+    def information_params
+        params.require(:user).permit(:specifed_time, :basic_time)
     end
     
     # ログイン済みユーザーかどうか確認

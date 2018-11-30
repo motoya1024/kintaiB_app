@@ -33,6 +33,7 @@ ja:
   activerecord:
     models:
       user: ユーザー
+      information: 基本情報
     attributes:
       user:
         name: 名前
@@ -40,3 +41,5 @@ ja:
         department: 所属
         password: パスワード 
         password_confirmation: パスワード確認
+        specifed_time: 指定勤務時間
+        basic_time: 基本時間

@@ -10,7 +10,7 @@
                     アカウント <b class="caret"></b>
                   </a>
                   <ul class="dropdown-menu">
-                    <li><%= link_to "プロフィール", user_path(current_user) %></li>
+                    <li><%= link_to "プロフィール", current_user %></li>
                     <li><%= link_to "プロフィール更新", edit_user_path(current_user) %></li>
                     <li class="divider"></li>
                     <li>
@@ -20,6 +20,7 @@
                 </li>
               <% elsif admin_logged_in? %>
                 <li><%= link_to "ユーザー一覧", users_path %></li>
+                <li><%= link_to "基本情報の更新", information_path %></li>
                 <li><%= link_to "ログアウト", logout_path, method: :delete %></li>
               <% else %>
                 <li><%= link_to "ログイン", login_path %></li>
