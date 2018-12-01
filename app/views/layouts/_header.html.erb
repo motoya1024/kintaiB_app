@@ -19,6 +19,7 @@
                   </ul>
                 </li>
               <% elsif admin_logged_in? %>
+                <li><%= link_to "勤怠表示", works_path %></li>
                 <li><%= link_to "ユーザー一覧", users_path %></li>
                 <li><%= link_to "基本情報の更新", information_path %></li>
                 <li><%= link_to "ログアウト", logout_path, method: :delete %></li>

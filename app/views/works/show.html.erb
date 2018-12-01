@@ -1,0 +1,62 @@
+<% provide(:title, '勤怠情報') %>
+
+
+<div class="work">
+    
+    <table id="work1" class="table-bordered table-striped">
+        <tr>
+            <td><span id="prev_month"><%= link_to '←', works_path(month: @this_month<<1) %></span><%= @this_month.strftime("%Y年%m月") %> 時間管理表<span id="next_month"><%= link_to '→', works_path(month: @this_month>>1) %></span></td>
+            <td>所定勤務時間 <%= @admin_user.specifed_time.strftime("%H:%M") %></td>
+            <td colspan="2">基本時間 <%= @admin_user.basic_time.strftime("%H:%M") %></td>
+            <td>初日 <%=@this_month.beginning_of_month.strftime("%m/%d") %></td>
+        </tr>
+         <tr>
+            <td>所属 <%= @current_user.department %></td>
+            <td>名前 <%= @current_user.name %></td>
+            <td>コード </td>
+            <td>出勤日数 </td>
+            <td>締め <%=@this_month.end_of_month.strftime("%m/%d") %></td>
+        </tr></td>
+        </tr>
+        
+    </table>    
+    
+    <%= link_to "勤怠編集", edit_works_path, class: 'btn btn-success'%>
+        
+     <table id="work2" class="table-bordered table-striped">
+        <tr>
+            <th rowspan="2">日付</th>
+            <th rowspan="2">曜日</th>
+            <th colspan="3">出社 </th>
+            <th colspan="3">退社 </th>
+            <th rowspan="2">在社時間 </th>
+            <th rowspan="2">備考 </th>
+        </tr>
+        <tr>
+            <th>時</th>
+            <th>分</th>
+            <th>ああああああ</th>
+            <th>時</th>
+            <th>分</th>
+            <th>ああああああ</th>
+        </tr>
+       <% (@this_month.beginning_of_month..@this_month.end_of_month).each do |date| %>
+        <tr>
+        　　<td><%= date.strftime("%m/%d")%> </td>
+            <td><%= %w(日 月 火 水 木 金 土)[date.wday]%></td>
+            <td>分 </td>
+            <td>qq </td>
+            <td>qq </td>
+            <td>qq </td>
+            <td>qq </td>
+            <td>qq </td>
+            <td>qq </td>
+            <td>qq </td>
+         </tr>  
+       <% end %>
+    </table>      
+    
+</div>
+
+
+

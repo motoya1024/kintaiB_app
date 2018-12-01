@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   patch '/information',  to: 'users#informationupdate'
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :users
+  resource :works
    resources :users do
     member do
       get :following, :followers

@@ -297,3 +297,36 @@ span.picture {
 .users.follow {
   padding: 0;
 }
+
+/* work-display */
+#work1,#work2{
+  width:100%;
+  text-align:center;
+}
+
+#work1{
+  margin-bottom:30px;
+  tr{
+    height:50px;
+  }
+}
+
+#work2{
+  tr{
+    height:30px;
+  }
+}
+
+#prev_month,#next_month{
+  border-radius:5px;
+  border:1px solid #aaaaaa;
+  padding:10px
+}
+
+#prev_month{
+  margin-right:15px;
+}
+
+#next_month{
+  margin-left:15px;
+}
