@@ -21,7 +21,7 @@
 
     </table>    
     
-    <%= link_to "勤怠編集", edit_work_path, class: 'btn btn-success'%>
+    <%= link_to "勤怠を編集", edit_work_path, class: 'btn btn-success'%>
         
      <table id="work2" class="table-bordered table-striped">
         <tr>
@@ -62,7 +62,7 @@
                             <%= form_for(@timecard ,url:leavingupdate_path) do |f| %>
                                 <%= f.submit yield(:leaving_time), name:"leaving_time", class: "btn btn-primary" %>
                             <% end %>
-                        </td>
+                        </td>   
                         <% end %>  
                         <td></td>
                     <% end %>    
