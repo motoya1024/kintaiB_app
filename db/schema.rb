@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181130123311) do
+ActiveRecord::Schema.define(version: 20181201113433) do
 
   create_table "information", force: :cascade do |t|
     t.datetime "spefified_time"
@@ -39,6 +39,16 @@ ActiveRecord::Schema.define(version: 20181130123311) do
     t.index ["follower_id"], name: "index_relationships_on_follower_id"
   end
 
+  create_table "timecards", force: :cascade do |t|
+    t.datetime "arrival_time"
+    t.datetime "leaving_time"
+    t.string "remark"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_timecards_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -61,9 +71,11 @@ ActiveRecord::Schema.define(version: 20181130123311) do
   create_table "works", force: :cascade do |t|
     t.time "arrival_time"
     t.time "leaving_time"
-    t.text "remark"
+    t.string "remark"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_works_on_user_id"
   end
 
 end

@@ -10,15 +10,17 @@ Rails.application.routes.draw do
   patch '/information',  to: 'users#informationupdate'
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :users
-  resource :works
-   resources :users do
+  resources :works
+  resources :timecards
+  post '/leavingupdate',  to: 'timecards#leaving_update'
+  resources :users do
     member do
       get :following, :followers
     end
   end
   resources :account_activations, only: [:edit]
   resources :microposts,          only: [:create, :destroy]
-  resources :relationships,       only: [:create, :destroy]
+  #resources :relationships,       only: [:create, :destroy]
   
   root 'static_pages#home'
   get  '/help',    to: 'static_pages#help'
