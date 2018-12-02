@@ -35,11 +35,12 @@
         <tr>
             <th>時</th>
             <th>分</th>
-            <th>aaaa　</th>
+            <th class="time_btn"></th>
             <th>時</th>
             <th>分</th>
-            <th>aaaa  </th>
+            <th class="time_btn"></th>
         </tr>
+        
         <% (@this_month.beginning_of_month..@this_month.end_of_month).each_with_index do |date,index| %>
             <tr>
             　　<td><%= date.strftime("%m/%d")%> </td>
@@ -83,8 +84,14 @@
                     <td></td>
                     <td></td>
                 <% end %>
-             </tr>  
+             </tr> 
         <% end %>
+        
+         <tr>
+             <td colspan="2"><%= total_basictime_str(@admin_user.basic_time,@time_cards)%></td>
+             <td colspan="6"></td>
+             <td><%= total_worktime_str(@time_cards)%></td>
+             <td></td>
       </table>
 
 </div>

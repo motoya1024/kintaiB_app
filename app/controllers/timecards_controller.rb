@@ -30,6 +30,11 @@ class TimecardsController < ApplicationController
         
         @arrival_count = @time_cards.count { |i| i != nil }
         
+        @admin_time = (@admin_user.basic_time.hour + (@admin_user.basic_time.min)/60) * @time_cards.count
+        
+        
+        
+        #render plain: @admin_time.inspect
     end
     
     
