@@ -1,22 +1,52 @@
 class TimecardsController < ApplicationController
     
+    before_action :logged_in, only: [:show, :edit, :leaving_update,]
+    before_action :timecard_logged_in, only: [:show, :edit, :leaving_update]
+    
+    
     def edit
+        
+        if params[:month]
+          @this_month = params[:month].to_date
+        end
+        
+        @user = User.find(params[:id])
+        
+        @year = @this_month.year
+        
+        @month = @this_month.month
+        
+        @time_cards = monthly_time_cards(@user, @year, @month)
+        
+        @timecards = Array.new
+        
+       # render plain: @time_cards[@this_month.beginning_of_month.day-1].inspect
+        
+        @time_cards.each do |time_card|
+            
+           if !time_card.nil?
+               
+               @timecards.push(time_card)
+               
+           else
+               
+               @timecards.push(current_user.timecards.build)
+               
+           end
+           
+       end
+       
+      #render plain: @ti.inspect
         
         
         
     end
     
-    
-    
     def show
         
-        if params[:month]
-          @this_month = params[:month].to_date
-        else
-          @this_month = Date.today 
-        end   
+        @this_month = params[:month] ? params[:month].to_date : Date.today
 
-        @current_user = User.find(params[:id])
+        @user = User.find(params[:id])
         
         @admin_user = User.find_by(admin: true)
         
@@ -24,17 +54,15 @@ class TimecardsController < ApplicationController
         
         @month = @this_month.month
         
-        @timecard = @current_user.timecards.build
+        @timecard = @user.timecards.build
       
-        @time_cards = monthly_time_cards(current_user, @year, @month)
+        @time_cards = monthly_time_cards(@user, @year, @month)
         
         @arrival_count = @time_cards.count { |i| i != nil }
         
         @admin_time = (@admin_user.basic_time.hour + (@admin_user.basic_time.min)/60) * @time_cards.count
         
-        
-        
-        #render plain: @admin_time.inspect
+        #render plain: current_user.inspect
     end
     
     
@@ -66,6 +94,14 @@ class TimecardsController < ApplicationController
        
     end
     
+    def update
+    
+      @user = User.find(params[:id])
+      
+      render plain: @user.inspect
+       
+    end
+    
     
     
     private
@@ -75,10 +111,27 @@ class TimecardsController < ApplicationController
            results = Array.new(number_of_days_in_month) # 月の日数分nilで埋めた配列を用意
            #time_cards = Timecard.all
            time_cards = Timecard.monthly(user,year,month)
+           
            time_cards.each do |card|
             results[card.arrival_time.day - 1] = card
            end
            results
-       end     
+           #render plain:results
+       end 
+           
+        def timecard_logged_in
+          unless admin_logged_in?
+            @user = User.find(params[:id])
+            unless current_user?(@user)
+                flash[:danger] = "アクセス権限がありません。"
+                redirect_to login_url
+            end
+          end
+        end
+       
+     private
+        def timecards_params
+          params.permit(timecards: [:arrival_time, :leaving_time])[:timecards]
+        end
     
 end

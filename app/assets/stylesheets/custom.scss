@@ -321,6 +321,7 @@ span.picture {
   }
 }
 
+
 #prev_month,#next_month{
   border-radius:5px;
   border:1px solid #aaaaaa;
@@ -337,4 +338,32 @@ span.picture {
 
 .time_btn{
   width:10%;
+}
+
+
+/*timecard_edit*/
+
+#timecard_edit{
+  width:100%;
+  text-align:center;
+  tr{
+    height:30px;
+  }
+  th{
+    text-align:center;
+  }
+ 
+}
+
+.edit-btn{
+  margin-top:20px;
+  text-align:center;
+  a{
+  padding:10px 30px;
+  }
+}
+
+.update-btn{
+  padding:10px 30px;
+  width:134px
 }

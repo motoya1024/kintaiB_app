@@ -12,8 +12,8 @@
             <td>初日 <%=@this_month.beginning_of_month.strftime("%m/%d") %></td>
         </tr>
          <tr>
-            <td>所属 <%= @current_user.department %></td>
-            <td>名前 <%= @current_user.name %></td>
+            <td>所属 <%= @user.department %></td>
+            <td>名前 <%= @user.name %></td>
             <td>コード </td>
             <td>出勤日数 <%= @arrival_count %></td>
             <td>締め <%=@this_month.end_of_month.strftime("%m/%d") %></td>
@@ -21,7 +21,7 @@
 
     </table>    
     
-    <%= link_to "勤怠を編集", edit_work_path, class: 'btn btn-success'%>
+    <%= link_to "勤怠を編集", edit_timecard_path(@user,month:@this_month), class: 'btn btn-success'%>
         
      <table id="work2" class="table-bordered table-striped">
         <tr>
@@ -40,24 +40,29 @@
             <th>分</th>
             <th class="time_btn"></th>
         </tr>
-        
+    
+         <!-- 指定された月の日をインデックスと一緒にループする　!-->
         <% (@this_month.beginning_of_month..@this_month.end_of_month).each_with_index do |date,index| %>
+        
             <tr>
             　　<td><%= date.strftime("%m/%d")%> </td>
                 <td><%= %w(日 月 火 水 木 金 土)[date.wday]%></td>
+                <!-- @time_cardsの配列の中でnilでなかった場合　!-->
                 <% if(@time_cards[index]) %>
                     <td><%= @time_cards[index].arrival_time.strftime("%H") %></td>
                     <td><%= @time_cards[index].arrival_time.strftime("%M") %></td>
                     <td></td>
+                    <!-- @time_cardsの配列の中で退社時間が登録されていたら　!-->
                     <% if(@time_cards[index]).leaving_time %>
                         <td><%= @time_cards[index].leaving_time.strftime("%H") %></td>
                         <td><%= @time_cards[index].leaving_time.strftime("%M") %></td>
                         <td></td>
-                        <td><%= time_diff_str(@time_cards[index].leaving_time - @time_cards[index].arrival_time)%></td>
+                        <td><%= time_diff_str(@time_cards[index].leaving_time, @time_cards[index].arrival_time)%></td>
                     <% else %> 
                         <td></td>
                         <td></td>
-                        <% if(date == Date.today) %>
+                        <!-- 本日の日付だったら出社時間を登録　!-->
+                        <% if(date == Time.current.strftime("%Y-%m-%d").to_date) %>
                         <td>
                             <%= form_for(@timecard ,url:leavingupdate_path) do |f| %>
                                 <%= f.submit yield(:leaving_time), name:"leaving_time", class: "btn btn-primary" %>
@@ -70,7 +75,8 @@
                 <% else %>
                     <td></td>
                     <td></td>
-                    <% if(date == Date.today) %>
+                    <!-- 本日の日付だったら退社時間を登録　!-->
+                    <% if(date == Time.current.strftime("%Y-%m-%d").to_date) %>
                     <td>
                         <%= form_for(@timecard) do |f| %>
                             <%= f.submit yield(:arrival_time), name:"arrival_time", class: "btn btn-primary" %>

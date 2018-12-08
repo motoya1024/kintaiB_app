@@ -3,6 +3,7 @@ class User < ApplicationRecord
    #has_many :microposts, dependent: :destroy
    has_many :works, dependent: :destroy
    has_many :timecards, dependent: :destroy 
+   accepts_nested_attributes_for :timecards
    has_many :active_relationships, class_name:  "Relationship",
                                    foreign_key: "follower_id",
                                    dependent:   :destroy
