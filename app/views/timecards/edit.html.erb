@@ -2,7 +2,9 @@
 <% provide(:button_text, '編集を保存') %>
 <div class="work">
     
-     <%= form_tag timecard_path(current_user),method: :put do %>
+     <%= form_tag update_all_path do %>
+     <%= hidden_field_tag :id, @user.id %>
+     <%= hidden_field_tag :month, @this_month %>
      <table id="timecard_edit" class="table-bordered table-striped">
         <tr>
             <th>日付</th>
@@ -16,30 +18,37 @@
             <tr>
             　　<td><%= Date.new(@this_month.year,@this_month.month,index+1).strftime("%m/%d")%> </td>
                 <td><%= %w(日 月 火 水 木 金 土)[Date.new(@this_month.year,@this_month.month,index+1).wday]%></td>
-                  <%= fields_for "timecard[]", timecard do |fi| %>
+                <% if !timecard.id.nil? %>
+                  <%= fields_for "timecards[]", timecard do |fi| %>
                      <td><% if !timecard.arrival_time.nil? %>
                              <%= fi.time_field :arrival_time ,value: timecard.arrival_time.strftime("%H:%M") %>
                          <% else %>
                              <%= fi.time_field :arrival_time %>
                          <% end %>
-                         </td>
+                     </td>
                      <td><% if !timecard.leaving_time.nil? %>
                              <%= fi.time_field :leaving_time ,value: timecard.leaving_time.strftime("%H:%M") %>
                          <% else %>
                              <%= fi.time_field :leaving_time %>
                          <% end %>
-                         </td>
-                     <td><% if !timecard.leaving_time.nil?||!timecard.arrival_time.nil? %>
+                     </td>
+                     <td><% if !timecard.leaving_time.nil?&&!timecard.arrival_time.nil? %>
                              <%= time_diff_str(timecard.leaving_time, timecard.arrival_time)%>
                          <% end %>
                      </td>
                      <td><%= fi.text_field :remark %></td>
                   <% end %>
+                <% else %>
+                   <td><input type="time" id="timecards_<%=index+1%>_arrival_time" name="timecards[x<%=index+1%>][arrival_time]" /></td>
+                   <td><input type="time" id="timecards_<%=index+1%>_leaving_time" name="timecards[x<%=index+1%>][leaving_time]" /></td>
+                   <td></td>
+                   <td><input type="text" id="timecards_<%=index+1%>_remark" name="timecards[x<%=index+1%>][remark]" /></td>
+                <% end %>  
              </tr> 
-        <% end %>
+         <% end %>
      </table>  
     <div class="edit-btn">
-        <%= link_to "キャンセル", timecard_path(current_user), class: 'btn btn-success'%>
+        <%= link_to "キャンセル", timecard_path(@user), class: 'btn btn-success'%>
         <%= submit_tag yield(:button_text), class: "btn btn-primary update-btn" %>
     </div>
 <% end %> 

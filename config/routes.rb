@@ -9,17 +9,19 @@ Rails.application.routes.draw do
   get  '/information',  to: 'users#information'
   patch '/information',  to: 'users#informationupdate'
   resources :password_resets,     only: [:new, :create, :edit, :update]
-  resources :users
-  resources :works
-  resources :timecards
+  resources :users 
+  resources :timecards 
+   
+  #resources :works
   post '/leavingupdate',  to: 'timecards#leaving_update'
+  post '/update_all', to: 'timecards#update_all'
   resources :users do
     member do
       get :following, :followers
     end
   end
-  resources :account_activations, only: [:edit]
-  resources :microposts,          only: [:create, :destroy]
+  #resources :account_activations, only: [:edit]
+  #resources :microposts,          only: [:create, :destroy]
   #resources :relationships,       only: [:create, :destroy]
   
   root 'static_pages#home'

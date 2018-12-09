@@ -43,7 +43,6 @@
     
          <!-- 指定された月の日をインデックスと一緒にループする　!-->
         <% (@this_month.beginning_of_month..@this_month.end_of_month).each_with_index do |date,index| %>
-        
             <tr>
             　　<td><%= date.strftime("%m/%d")%> </td>
                 <td><%= %w(日 月 火 水 木 金 土)[date.wday]%></td>
@@ -58,27 +57,30 @@
                         <td><%= @time_cards[index].leaving_time.strftime("%M") %></td>
                         <td></td>
                         <td><%= time_diff_str(@time_cards[index].leaving_time, @time_cards[index].arrival_time)%></td>
+                    <!-- @time_cardsの配列の中で退社時間が登録されていなかったら　!-->    
                     <% else %> 
                         <td></td>
                         <td></td>
-                        <!-- 本日の日付だったら出社時間を登録　!-->
+                        <!-- 本日の日付だったら退社時間を登録　!-->
                         <% if(date == Time.current.strftime("%Y-%m-%d").to_date) %>
                         <td>
-                            <%= form_for(@timecard ,url:leavingupdate_path) do |f| %>
+                            <%= form_for(@timecard,url:leavingupdate_path) do |f| %>
+                                <%= hidden_field_tag :id, @user.id %>
                                 <%= f.submit yield(:leaving_time), name:"leaving_time", class: "btn btn-primary" %>
                             <% end %>
                         </td>   
                         <% end %>  
                         <td></td>
-                    <% end %>    
+                    <% end %> 
                     <td></td>
-                <% else %>
+               <% else %>
                     <td></td>
                     <td></td>
                     <!-- 本日の日付だったら退社時間を登録　!-->
                     <% if(date == Time.current.strftime("%Y-%m-%d").to_date) %>
                     <td>
-                        <%= form_for(@timecard) do |f| %>
+                        <%= form_for @timecard do |f| %>
+                            <%= hidden_field_tag :id, @user.id %>
                             <%= f.submit yield(:arrival_time), name:"arrival_time", class: "btn btn-primary" %>
                         <% end %>
                     </td>

@@ -24,21 +24,3 @@
                   <% end %>
              </tr> 
          <% end %>
-         
-         
-               puts day
-        if !id.include?("x")
-             timecard= Timecard.find(id)
-             timecard.arrival_time = @timecard[id]["arrival_time"]
-             timecard.leaving_time = @timecard[id]["leaving_time"]
-             timecard.remark = @timecard[id]["remark"]
-             timecard.save
-         #else
-             
-             timecard = @user.timecards.build
-            timecard.arrival_time = @timecard[id]["arrival_time"]
-            timecard.leaving_time = @timecard[id]["leaving_time"]
-            timecard.remark = @timecard[id]["remark"]
-=end            timecard.save
-        # end
-      end
