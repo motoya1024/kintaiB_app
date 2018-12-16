@@ -1,7 +1,7 @@
 class TimecardsController < ApplicationController
     
-    before_action :logged_in, only: [:show, :edit, :leaving_update,]
-    before_action :timecard_logged_in, only: [:show, :edit, :leaving_update]
+    before_action :logged_in, only: [:show, :edit, :leaving_update, :create, :update_all]
+    before_action :timecard_logged_in, only: [:show, :edit, :leaving_update, :create, :update_all]
     
     
     def edit
@@ -12,35 +12,25 @@ class TimecardsController < ApplicationController
         
         @user = User.find(params[:id])
         
-        @year = @this_month.year
+        year = @this_month.year
         
-        @month = @this_month.month
+        month = @this_month.month
         
-        #出社時間を登録したタイムカードに退社時間を更新
-        @time_cards = monthly_time_cards(@user, @year, @month)
+        #当月分のタイムカードを取得
+        @time_cards = monthly_time_cards(@user, year, month)
         
         @timecards = Array.new
-        
-       # render plain: @time_cards[@this_month.beginning_of_month.day-1].inspect
         
         # 当月分のタイムカードをループでとりだしてnilの場合はインスタンスを生成
         @time_cards.each do |time_card|
             
            if !time_card.nil?
-               
                @timecards.push(time_card)
-               
            else
-               
                @timecards.push(@user.timecards.build)
-               
            end
            
-       end
-       
-      #render plain: @timecards.inspect
-        
-        
+        end
         
     end
     
@@ -52,20 +42,16 @@ class TimecardsController < ApplicationController
         
         @admin_user = User.find_by(admin: true)
         
-        @year = @this_month.year
+        year = @this_month.year
         
-        @month = @this_month.month
+        month = @this_month.month
         
         @timecard = @user.timecards.build
       
         # 当月分のタイムカードを配列の取得（ない日はnil)
-        @time_cards = monthly_time_cards(@user, @year, @month)
-        
+        @time_cards = monthly_time_cards(@user, year, month)
+        # 出勤日数
         @arrival_count = @time_cards.count { |i| i != nil }
-        
-        @admin_time = (@admin_user.basic_time.hour + (@admin_user.basic_time.min)/60) * @time_cards.count
-        
-        #render plain: @time_cards.inspect
         
     end
     
@@ -73,28 +59,40 @@ class TimecardsController < ApplicationController
     def create
         
          @user = User.find(params[:id])
-      
-         @timecard = @user.timecards.build
+         
+         today = Time.zone.now
+         
+         timecard = @user.timecards.where("year = ? and month = ? and day = ?", today.year, today.month, today.day).first
+         
+         if timecard.nil?
+              @timecard = @user.timecards.build
+         else
+              @timecard = timecard
+         end
         
          if params[:arrival_time]
-            @timecard.arrival_time = Time.now
+            @timecard.arrival_time = today
+            @timecard.year = today.year
+            @timecard.month = today.month
+            @timecard.day = today.strftime('%-d').to_i
          end
-       
+    
          if @timecard.save
-           redirect_to timecard_path(@user)
+             redirect_to timecard_path(@user)
          end
-       
+         
     end
     
     #出社時間を登録したタイムカードに退社時間を更新
     def leaving_update
         
          @user = User.find(params[:id])
-    
+        
+         #　指定されたユーザーの退社時間と同じ日の出社時間のタイムカードを取得
          @timecard = Timecard.where("user_id = ? and arrival_time >= ?",@user.id,Time.zone.now.beginning_of_day).first
          
          if params[:leaving_time]
-            @timecard.leaving_time = Time.now
+            @timecard.leaving_time = Time.zone.now
          end
        
          if @timecard.save
@@ -113,48 +111,77 @@ class TimecardsController < ApplicationController
       
       @timecard = params[:timecards]
       
-      #render plain: @timecard["x1"]["arrival_time"].inspect
-      #render plain: @timecard.keys.inspect
-      #day = 1
-      #render plain: Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,11,11).inspect
       day = 0
+      # timecard送信データのキー値（id)をループする　!-->
       params[:timecards].keys.each do |id|
       day+=1   
-      #puts day
+     
+      # 既存データを編集する場合　!-->
         if !id.include?("x")
+             # id値からtimecardデータを取得する　!-->
              timecard= Timecard.find(id)
+             if !timecard.arrival_time.nil?
+                 timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["arrival_time"].to_time.hour,@timecard[id]["arrival_time"].to_time.min)
+             end
+             if !timecard.leaving_time.nil?
+                 timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["leaving_time"].to_time.hour,@timecard[id]["leaving_time"].to_time.min)
+             end
+             timecard.remark = @timecard[id]["remark"]
              
-             timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["arrival_time"].to_time.hour,@timecard[id]["arrival_time"].to_time.min)
-             timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["leaving_time"].to_time.hour,@timecard[id]["leaving_time"].to_time.min)
-             #timecard.remark = @timecard[id]["remark"]
              timecard.save
   
-        end
+         else
+             #出社時間・退社時間・備考のどれかが入力された場合のみ新規登録する。
+             if !params[:timecards][id]["arrival_time"].empty?||!params[:timecards][id]["leaving_time"].empty?||!params[:timecards][id]["remark"].empty?
+                 timecard = @user.timecards.build
+                 
+                 # 出社時間が空でなかったら 
+                 if !params[:timecards][id]["arrival_time"].empty?
+                     timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["arrival_time"].to_time.hour,@timecard[id]["arrival_time"].to_time.min)
+                 end
+                 #　退社時間が空でなかったら
+                 if !params[:timecards][id]["leaving_time"].empty?
+                     timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["leaving_time"].to_time.hour,@timecard[id]["leaving_time"].to_time.min)
+                 end
+                 
+                 timecard.year = @this_month.to_date.year
+                 timecard.month = @this_month.to_date.month
+                 timecard.day = day
+                 timecard.remark = params[:timecards][id]["remark"]
+                 
+                 timecard.save
+             end
+         end    
       end
-     # render plain: timecard.arrival_time.inspect
       
-     redirect_to timecard_path(@user)
+    redirect_to timecard_path(@user)
          
     end
     
     private
         # 指定年月の全ての日のタイムカードの配列を取得する（タイムカードが存在しない日はnil）
        def monthly_time_cards(user, year, month)
+           #指定年月末を取得
            number_of_days_in_month = Date.new(year, month, 1).next_month.prev_day.day
-           results = Array.new(number_of_days_in_month) # 月の日数分nilで埋めた配列を用意
-           #time_cards = Timecard.all
-           time_cards = Timecard.monthly(user,year,month)
            
+           results = Array.new(number_of_days_in_month) # 月の日数分nilで埋めた配列を用意
+      
+           time_cards = Timecard.monthly(user,year,month)   #ユーザーごとの指定年月のtimecard履歴を取得
+           
+           #ユーザーごとの指定年月のtimecard履歴をループしてインデックスを付与する
+    
            time_cards.each do |card|
-              results[card.arrival_time.day - 1] = card
+              results[card.day - 1] = card
            end
            results
-           #render plain:results
+          
        end 
            
         def timecard_logged_in
+          #管理者ユーザーでなかった場合  
           unless admin_logged_in?
             @user = User.find(params[:id])
+            #自分以外のユーザーでなければ
             unless current_user?(@user)
                 flash[:danger] = "アクセス権限がありません。"
                 redirect_to login_url

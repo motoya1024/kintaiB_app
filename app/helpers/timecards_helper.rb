@@ -1,7 +1,4 @@
 module TimecardsHelper
-  
-  
-  
     
     # 00:00 形式の勤務時間を返す（退社時間‐出社時間）
       def time_diff_str(leaving_time,arrival_time)
@@ -36,7 +33,6 @@ module TimecardsHelper
               
               time = hours + minutes/60.to_f
               sum+=time
-              
           end
         end
           "%.2f" % sum

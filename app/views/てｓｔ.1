@@ -1,26 +1,19 @@
-<% @timecards.each_with_index do |timecard,index|  %>
-     
-            <tr>
-            　　<td><%= Date.new(@this_month.year,@this_month.month,index+1).strftime("%m/%d")%> </td>
-                <td><%= %w(日 月 火 水 木 金 土)[Date.new(@this_month.year,@this_month.month,index+1).wday]%></td>
-                  <%= fields_for "timecards[]", timecard do |fi| %>
+<%= fields_for "timecards[]", timecard do |fi| %>    
                      <td><% if !timecard.arrival_time.nil? %>
                              <%= fi.time_field :arrival_time ,value: timecard.arrival_time.strftime("%H:%M") %>
                          <% else %>
                              <%= fi.time_field :arrival_time %>
                          <% end %>
-                         </td>
+                     </td>
                      <td><% if !timecard.leaving_time.nil? %>
                              <%= fi.time_field :leaving_time ,value: timecard.leaving_time.strftime("%H:%M") %>
                          <% else %>
                              <%= fi.time_field :leaving_time %>
                          <% end %>
-                         </td>
+                     </td>
                      <td><% if !timecard.leaving_time.nil?&&!timecard.arrival_time.nil? %>
                              <%= time_diff_str(timecard.leaving_time, timecard.arrival_time)%>
                          <% end %>
                      </td>
                      <td><%= fi.text_field :remark %></td>
                   <% end %>
-             </tr> 
-         <% end %>

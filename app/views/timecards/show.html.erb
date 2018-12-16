@@ -18,11 +18,9 @@
             <td>出勤日数 <%= @arrival_count %></td>
             <td>締め <%=@this_month.end_of_month.strftime("%m/%d") %></td>
         </tr>
-
     </table>    
-    
     <%= link_to "勤怠を編集", edit_timecard_path(@user,month:@this_month), class: 'btn btn-success'%>
-        
+
      <table id="work2" class="table-bordered table-striped">
         <tr>
             <th rowspan="2">日付</th>
@@ -46,58 +44,75 @@
             <tr>
             　　<td><%= date.strftime("%m/%d")%> </td>
                 <td><%= %w(日 月 火 水 木 金 土)[date.wday]%></td>
-                <!-- @time_cardsの配列の中でnilでなかった場合　!-->
-                <% if(@time_cards[index]) %>
-                    <td><%= @time_cards[index].arrival_time.strftime("%H") %></td>
-                    <td><%= @time_cards[index].arrival_time.strftime("%M") %></td>
-                    <td></td>
+                <!-- @time_cardsの配列の中でtimecardが存在していた場合　!-->
+                <% if @time_cards[index]  %>
+               　　  <!-- @time_cardsの配列の中で退社時間が登録されていたら　!-->
+                    <% if(@time_cards[index].arrival_time) %>
+                        <td><%= @time_cards[index].arrival_time.strftime("%H") %></td>  <!--arrival_time H !-->
+                        <td><%= @time_cards[index].arrival_time.strftime("%M") %></td>  <!--arrival_time Ｍ !-->
+                        <td></td>   <!--出社ボタン !-->
+                    <% else %> 
+                    <!-- @time_cardsの配列の中で退社時間が登録されていなかったら　!-->
+                        <td></td>   <!--arrival_time H !-->
+                        <td></td>   <!--arrival_time Ｍ !-->
+                        <!-- 本日の日付だったら退社時間を登録　!-->
+                        <td>    <!--出社ボタン !-->
+                        <% if date == Time.current.strftime("%Y-%m-%d").to_date  %>
+                            <%= form_for @timecard do |f| %>
+                                <%= hidden_field_tag :id, @user.id %>
+                                <%= f.submit yield(:arrival_time), name:"arrival_time", class: "btn btn-primary" %>
+                            <% end %>
+                        <% end %>        
+                        </td>   
+                    <% end  %>  
                     <!-- @time_cardsの配列の中で退社時間が登録されていたら　!-->
-                    <% if(@time_cards[index]).leaving_time %>
-                        <td><%= @time_cards[index].leaving_time.strftime("%H") %></td>
-                        <td><%= @time_cards[index].leaving_time.strftime("%M") %></td>
-                        <td></td>
-                        <td><%= time_diff_str(@time_cards[index].leaving_time, @time_cards[index].arrival_time)%></td>
+                    <% if @time_cards[index].leaving_time %>
+                        <td><%= @time_cards[index].leaving_time.strftime("%H") %></td>  <!--leaving_time H !-->
+                        <td><%= @time_cards[index].leaving_time.strftime("%M") %></td>  <!--leaving_time M !-->
+                        <td></td>   <!--退社ボタン !-->
+                        <td><%= time_diff_str(@time_cards[index].leaving_time, @time_cards[index].arrival_time)%></td>  <!--在社時間 !-->
                     <!-- @time_cardsの配列の中で退社時間が登録されていなかったら　!-->    
                     <% else %> 
-                        <td></td>
-                        <td></td>
+                        <td></td>   <!--leaving_time H !-->
+                        <td></td>   <!--leaving_time M !-->
                         <!-- 本日の日付だったら退社時間を登録　!-->
-                        <% if(date == Time.current.strftime("%Y-%m-%d").to_date) %>
-                        <td>
+                        <td>    <!--退社ボタン !-->
+                        <% if date == Time.current.strftime("%Y-%m-%d").to_date&&!@time_cards[index].arrival_time.nil? %>
                             <%= form_for(@timecard,url:leavingupdate_path) do |f| %>
                                 <%= hidden_field_tag :id, @user.id %>
                                 <%= f.submit yield(:leaving_time), name:"leaving_time", class: "btn btn-primary" %>
                             <% end %>
-                        </td>   
-                        <% end %>  
-                        <td></td>
+                         <% end %>   
+                        </td>
+                        <td></td> <!--在社時間 !-->
                     <% end %> 
-                    <td></td>
+            　　　　　 <td><%= @time_cards[index].remark %></td>     <!--備考 !-->
                <% else %>
-                    <td></td>
-                    <td></td>
+                <!-- @time_cardsの配列の中でnilであった場合　!-->
+                    <td></td>   <!--arrival_time H !-->
+                    <td></td>   <!--arrival_time Ｍ !-->
                     <!-- 本日の日付だったら退社時間を登録　!-->
+                    <td>    <!--出社ボタン !-->
                     <% if(date == Time.current.strftime("%Y-%m-%d").to_date) %>
-                    <td>
                         <%= form_for @timecard do |f| %>
                             <%= hidden_field_tag :id, @user.id %>
                             <%= f.submit yield(:arrival_time), name:"arrival_time", class: "btn btn-primary" %>
                         <% end %>
+                    <% end %>   
                     </td>
-                    <% end %>
-                    <td></td>
-                    <td></td>
-                    <td></td> 
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td></td>   <!--leaving_time H !-->
+                    <td></td>   <!--leaving_time M !-->
+                    <td></td>   <!--退社ボタン !-->
+                    <td></td>   <!--在社時間 !-->
+                    <td></td>   <!--備考 !-->
                 <% end %>
              </tr> 
         <% end %>
-        
          <tr>
+             <!-- 基本合計時間  -->
              <td colspan="2"><%= total_basictime_str(@admin_user.basic_time,@time_cards)%></td>
              <td colspan="6"></td>
+             <!-- 在社合計時間  -->
              <td><%= total_worktime_str(@time_cards)%></td>
              <td></td>
       </table>
