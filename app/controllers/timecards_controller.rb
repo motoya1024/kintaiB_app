@@ -51,7 +51,7 @@ class TimecardsController < ApplicationController
         # 当月分のタイムカードを配列の取得（ない日はnil)
         @time_cards = monthly_time_cards(@user, year, month)
         # 出勤日数
-        @arrival_count = @time_cards.count { |i| i != nil }
+        @arrival_count = @time_cards.count { |i| i != nil && i.leaving_time !=nil }
         
     end
     
@@ -87,16 +87,17 @@ class TimecardsController < ApplicationController
     def leaving_update
         
          @user = User.find(params[:id])
-        
-         #　指定されたユーザーの退社時間と同じ日の出社時間のタイムカードを取得
-         @timecard = Timecard.where("user_id = ? and arrival_time >= ?",@user.id,Time.zone.now.beginning_of_day).first
+         
+         #　指定されたユーザーの出社日と同じ日の出社時間のタイムカードを取得
+         @timecard = Timecard.where("user_id = ? and arrival_time BETWEEN ? AND ?",@user.id,Time.zone.now.beginning_of_day,Time.zone.now.end_of_day).first
          
          if params[:leaving_time]
             @timecard.leaving_time = Time.zone.now
          end
+      
        
          if @timecard.save
-           redirect_to timecard_path(@user)
+            redirect_to timecard_path(@user)
          end
        
     end
@@ -120,14 +121,13 @@ class TimecardsController < ApplicationController
         if !id.include?("x")
              # id値からtimecardデータを取得する　!-->
              timecard= Timecard.find(id)
-             if !timecard.arrival_time.nil?
+             if !params[:timecards][id]["arrival_time"].empty?
                  timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["arrival_time"].to_time.hour,@timecard[id]["arrival_time"].to_time.min)
              end
-             if !timecard.leaving_time.nil?
+             if !params[:timecards][id]["leaving_time"].empty?
                  timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["leaving_time"].to_time.hour,@timecard[id]["leaving_time"].to_time.min)
              end
              timecard.remark = @timecard[id]["remark"]
-             
              timecard.save
   
          else

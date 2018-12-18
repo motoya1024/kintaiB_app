@@ -12,6 +12,7 @@ class UsersController < ApplicationController
   def index
     #@users = User.where(activated: true).paginate(page: params[:page])
     @users = User.paginate(page: params[:page])
+    @user = User.find(current_user.id)
   end
   
   def show
@@ -20,13 +21,13 @@ class UsersController < ApplicationController
   end
   
   def information
-    @user = User.find(current_user.id)
+    @user = User.find(params[:id])
   
   end
   
   def informationupdate
     
-    @user = User.find(current_user.id)
+    @user = User.find(params[:id])
     if @user.update_attributes(information_params)
       flash[:success] = "基本情報を更新しました。"
       render 'information'
@@ -39,14 +40,10 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)    # 実装は終わっていないことに注意!
     if @user.save
-       #@user.send_activation_email
-       #flash[:info] = "Please check your email to activate your account."
+  
        flash[:success] = "プロフィールを更新しました。"
        redirect_to root_url
       
-       #log_in @user
-       #flash[:success] = "Welcome to the Sample App!"
-       #redirect_to @user
     else
       render 'new'
     end

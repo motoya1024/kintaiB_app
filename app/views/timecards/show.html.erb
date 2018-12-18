@@ -7,8 +7,13 @@
     <table id="work1" class="table-bordered table-striped">
         <tr>
             <td><span id="prev_month"><%= link_to '←', timecard_path(month: @this_month<<1) %></span><%= @this_month.strftime("%Y年%m月") %> 時間管理表<span id="next_month"><%= link_to '→', timecard_path(month: @this_month>>1) %></span></td>
-            <td>所定勤務時間 <%= @admin_user.specifed_time.strftime("%H:%M") %></td>
-            <td colspan="2">基本時間 <%= @admin_user.basic_time.strftime("%H:%M") %></td>
+            <td>指定勤務時間 <% if @user.specifed_time %>
+                                    <%= decimal_time(@user.specifed_time) %>
+                             <% end %>
+            </td> <!--10進数表記　-->
+            <td colspan="2">基本時間 <% if @user.specifed_time %>
+                                        <%= decimal_time(@user.basic_time) %></td> <!--10進数表記　-->
+                                     <% end %>
             <td>初日 <%=@this_month.beginning_of_month.strftime("%m/%d") %></td>
         </tr>
          <tr>
@@ -21,7 +26,7 @@
     </table>    
     <%= link_to "勤怠を編集", edit_timecard_path(@user,month:@this_month), class: 'btn btn-success'%>
 
-     <table id="work2" class="table-bordered table-striped">
+    <table id="work2" class="table-bordered table-striped">
         <tr>
             <th rowspan="2">日付</th>
             <th rowspan="2">曜日</th>
@@ -38,31 +43,31 @@
             <th>分</th>
             <th class="time_btn"></th>
         </tr>
-    
-         <!-- 指定された月の日をインデックスと一緒にループする　!-->
+
+        <!-- 指定された月の日をインデックスと一緒にループする　!-->
         <% (@this_month.beginning_of_month..@this_month.end_of_month).each_with_index do |date,index| %>
             <tr>
-            　　<td><%= date.strftime("%m/%d")%> </td>
+                <td><%= date.strftime("%m/%d")%> </td>
                 <td><%= %w(日 月 火 水 木 金 土)[date.wday]%></td>
                 <!-- @time_cardsの配列の中でtimecardが存在していた場合　!-->
                 <% if @time_cards[index]  %>
-               　　  <!-- @time_cardsの配列の中で退社時間が登録されていたら　!-->
+                　　  <!-- @time_cardsの配列の中で出社時間が登録されていたら　!-->
                     <% if(@time_cards[index].arrival_time) %>
                         <td><%= @time_cards[index].arrival_time.strftime("%H") %></td>  <!--arrival_time H !-->
                         <td><%= @time_cards[index].arrival_time.strftime("%M") %></td>  <!--arrival_time Ｍ !-->
                         <td></td>   <!--出社ボタン !-->
                     <% else %> 
-                    <!-- @time_cardsの配列の中で退社時間が登録されていなかったら　!-->
+                        <!-- @time_cardsの配列の中で出社時間が登録されていなかったら　!-->
                         <td></td>   <!--arrival_time H !-->
                         <td></td>   <!--arrival_time Ｍ !-->
                         <!-- 本日の日付だったら退社時間を登録　!-->
                         <td>    <!--出社ボタン !-->
-                        <% if date == Time.current.strftime("%Y-%m-%d").to_date  %>
-                            <%= form_for @timecard do |f| %>
+                            <% if date == Time.current.strftime("%Y-%m-%d").to_date  %>
+                                <%= form_for @timecard do |f| %>
                                 <%= hidden_field_tag :id, @user.id %>
                                 <%= f.submit yield(:arrival_time), name:"arrival_time", class: "btn btn-primary" %>
-                            <% end %>
-                        <% end %>        
+                                <% end %>
+                            <% end %>        
                         </td>   
                     <% end  %>  
                     <!-- @time_cardsの配列の中で退社時間が登録されていたら　!-->
@@ -70,25 +75,29 @@
                         <td><%= @time_cards[index].leaving_time.strftime("%H") %></td>  <!--leaving_time H !-->
                         <td><%= @time_cards[index].leaving_time.strftime("%M") %></td>  <!--leaving_time M !-->
                         <td></td>   <!--退社ボタン !-->
-                        <td><%= time_diff_str(@time_cards[index].leaving_time, @time_cards[index].arrival_time)%></td>  <!--在社時間 !-->
+                        <td><!--在社時間 !-->
+                            <% if !@time_cards[index].arrival_time.nil? %>
+                                <%= time_diff_str(@time_cards[index].leaving_time, @time_cards[index].arrival_time)%> 
+                            <% end %>
+                        </td>
                     <!-- @time_cardsの配列の中で退社時間が登録されていなかったら　!-->    
                     <% else %> 
                         <td></td>   <!--leaving_time H !-->
                         <td></td>   <!--leaving_time M !-->
                         <!-- 本日の日付だったら退社時間を登録　!-->
                         <td>    <!--退社ボタン !-->
-                        <% if date == Time.current.strftime("%Y-%m-%d").to_date&&!@time_cards[index].arrival_time.nil? %>
-                            <%= form_for(@timecard,url:leavingupdate_path) do |f| %>
-                                <%= hidden_field_tag :id, @user.id %>
-                                <%= f.submit yield(:leaving_time), name:"leaving_time", class: "btn btn-primary" %>
-                            <% end %>
-                         <% end %>   
+                            <% if date == Time.current.strftime("%Y-%m-%d").to_date&&!@time_cards[index].arrival_time.nil? %>
+                                <%= form_for(@timecard,url:leavingupdate_path) do |f| %>
+                                    <%= hidden_field_tag :id, @user.id %>
+                                    <%= f.submit yield(:leaving_time), name:"leaving_time", class: "btn btn-primary" %>
+                                <% end %>
+                            <% end %>   
                         </td>
                         <td></td> <!--在社時間 !-->
                     <% end %> 
-            　　　　　 <td><%= @time_cards[index].remark %></td>     <!--備考 !-->
-               <% else %>
-                <!-- @time_cardsの配列の中でnilであった場合　!-->
+                    <td><%= @time_cards[index].remark %></td>     <!--備考 !-->
+                <% else %>
+                    <!-- @time_cardsの配列の中でnilであった場合　!-->
                     <td></td>   <!--arrival_time H !-->
                     <td></td>   <!--arrival_time Ｍ !-->
                     <!-- 本日の日付だったら退社時間を登録　!-->
@@ -106,15 +115,18 @@
                     <td></td>   <!--在社時間 !-->
                     <td></td>   <!--備考 !-->
                 <% end %>
-             </tr> 
-        <% end %>
-         <tr>
-             <!-- 基本合計時間  -->
-             <td colspan="2"><%= total_basictime_str(@admin_user.basic_time,@time_cards)%></td>
-             <td colspan="6"></td>
-             <!-- 在社合計時間  -->
-             <td><%= total_worktime_str(@time_cards)%></td>
-             <td></td>
-      </table>
-
+        　  </tr> 
+    　　 <% end %>
+            <tr>
+                <!-- 基本合計時間  -->
+                <td colspan="2"><% if @user.basic_time %>
+                                    <%= total_basictime_str(@user.basic_time,@time_cards)%>
+                                <% end %>   
+                </td>
+                <td colspan="6"></td>
+                <!-- 在社合計時間  -->
+                <td><%= total_worktime_str(@time_cards)%></td>
+                <td></td>
+            </tr>
+     </table>
 </div>

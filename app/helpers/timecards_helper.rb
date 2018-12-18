@@ -17,14 +17,26 @@ module TimecardsHelper
         minute = basic_time.min/60.to_f
         times = hour + minute
         total_time = times * time_cards.count
+        BigDecimal(total_time.to_s).floor(2).to_f
       end
+      
+      
+    #  10進数表記
+      def decimal_time(time)
+        hour = time.hour
+        minute = time.min/60.to_f
+        times = hour + minute
+        BigDecimal(times.to_s).floor(2).to_f
+      end
+    
+    
     
       # 00:00 形式の在社合計時間を返す
       def total_worktime_str(time_cards)
         sum = 0
         
         time_cards.each do |date|
-          if (!date.nil?&&!date.leaving_time.nil?)
+          if (!date.nil?&&!date.leaving_time.nil?&&!date.arrival_time.nil?)
             
               hour = (date.leaving_time.hour - date.arrival_time.hour)*60
               minute = date.leaving_time.min - date.arrival_time.min
@@ -33,6 +45,7 @@ module TimecardsHelper
               
               time = hours + minutes/60.to_f
               sum+=time
+              
           end
         end
           "%.2f" % sum
