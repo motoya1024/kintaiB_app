@@ -367,3 +367,13 @@ span.picture {
   padding:10px 30px;
   width:134px
 }
+
+/* error */
+
+#error_explanation{
+  ul{
+    li{
+      color:red;
+    }
+  }
+}

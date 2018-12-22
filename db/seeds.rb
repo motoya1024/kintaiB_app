@@ -10,25 +10,20 @@ User.create!(name:  "Example User",
              email: "example@railstutorial.org",
              password:              "foobar",
              password_confirmation: "foobar",
+             department: "営業",
              admin: true)
 
 99.times do |n|
   name  = Faker::Name.name
   email = "example-#{n+1}@railstutorial.org"
   password = "password"
+  department = "営業"
   User.create!(name:  name,
                email: email,
                password:              password,
+               department: department,
                password_confirmation: password)
 end
 
-(1..6).each do |n|
-  arrival_time  = Time.zone.local(2018,12,n,11,25)
-  leaving_time  = Time.zone.local(2018,12,n,14,36)
-  user_id = 6
-  Timecard.create!(arrival_time:  arrival_time,
-               leaving_time: leaving_time,
-               user_id: user_id
-               )
-end
+
 

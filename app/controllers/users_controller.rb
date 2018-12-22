@@ -30,12 +30,13 @@ class UsersController < ApplicationController
   
   def informationupdate
     @user = User.find(params[:id])
-    if @user.update_attributes(information_params)
-      flash[:success] = "基本情報を更新しました。"
-      render 'information'
-    else
-      render 'information'
-    end
+    @user.assign_attributes(information_params)
+      if @user.save(context: :informationupdate)
+        flash[:success] = "基本情報を更新しました。"
+        render 'information'
+      else
+        render 'information'
+      end
   
   end
   

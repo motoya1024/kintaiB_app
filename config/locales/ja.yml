@@ -33,7 +33,6 @@ ja:
   activerecord:
     models:
       user: ユーザー
-      information: 基本情報
     attributes:
       user:
         name: 名前
