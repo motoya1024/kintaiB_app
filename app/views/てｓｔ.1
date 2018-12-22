@@ -21,39 +21,38 @@
                   
                   
                   
-                  
-                  # 既存データを編集する場合　!-->
+             
+        # 既存データを編集する場合　!-->
         if !id.include?("x")
              # id値からtimecardデータを取得する　!-->
              timecard= Timecard.find(id)
-             if !params[:timecards][id]["arrival_time"].empty?
-                 timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["arrival_time"].to_time.hour,@timecard[id]["arrival_time"].to_time.min)
+             if !arrival_time.empty?
+                 timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,arrival_time.to_time.hour,arrival_time.to_time.min)
              end
-             if !params[:timecards][id]["leaving_time"].empty?
-                 timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["leaving_time"].to_time.hour,@timecard[id]["leaving_time"].to_time.min)
+             if !leaving_time.empty?
+                 timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,leaving_time.to_time.hour,leaving_time.to_time.min)
              end
-             timecard.remark = @timecard[id]["remark"]
-             
+             timecard.remark = remark
              timecard.save
   
          else
              #出社時間・退社時間・備考のどれかが入力された場合のみ新規登録する。
-             if !params[:timecards][id]["arrival_time"].empty?||!params[:timecards][id]["leaving_time"].empty?||!params[:timecards][id]["remark"].empty?
+             if !arrival_time.empty?||!leaving_time.empty?||!remark.empty?
                  timecard = @user.timecards.build
                  
                  # 出社時間が空でなかったら 
-                 if !params[:timecards][id]["arrival_time"].empty?
-                     timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["arrival_time"].to_time.hour,@timecard[id]["arrival_time"].to_time.min)
+                 if !arrival_time.empty?
+                     timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,arrival_time.to_time.hour,arrival_time.to_time.min)
                  end
                  #　退社時間が空でなかったら
-                 if !params[:timecards][id]["leaving_time"].empty?
-                     timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,@timecard[id]["leaving_time"].to_time.hour,@timecard[id]["leaving_time"].to_time.min)
+                 if !leaving_time.empty?
+                     timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,leaving_time.to_time.hour,leaving_time.to_time.min)
                  end
                  
                  timecard.year = @this_month.to_date.year
                  timecard.month = @this_month.to_date.month
                  timecard.day = day
-                 timecard.remark = params[:timecards][id]["remark"]
+                 timecard.remark = remark
                  
                  timecard.save
              end

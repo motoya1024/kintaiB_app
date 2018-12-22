@@ -6,7 +6,11 @@ class UsersController < ApplicationController
   before_action :admin_user,     only: :destroy
   
   def new
-    @user = User.new
+    if logged_in?
+        @user = User.find(current_user.id)
+    else
+        @user = User.new
+    end
   end
   
   def index
@@ -22,11 +26,9 @@ class UsersController < ApplicationController
   
   def information
     @user = User.find(params[:id])
-  
   end
   
   def informationupdate
-    
     @user = User.find(params[:id])
     if @user.update_attributes(information_params)
       flash[:success] = "基本情報を更新しました。"
@@ -38,12 +40,10 @@ class UsersController < ApplicationController
   end
   
   def create
-    @user = User.new(user_params)    # 実装は終わっていないことに注意!
+    @user = User.new(user_params)   
     if @user.save
-  
        flash[:success] = "プロフィールを更新しました。"
        redirect_to root_url
-      
     else
       render 'new'
     end
