@@ -113,7 +113,7 @@ class TimecardsController < ApplicationController
                 if !id.include?("x")
                      # id値からtimecardデータを取得する　!-->
                      timecard= Timecard.find(id)
-            　  # 新規登録で出社時間及び退社時間及び備考欄のいずれかに記入があった場合       
+                # 新規登録で出社時間及び退社時間及び備考欄のいずれかに記入があった場合       
                 elsif id.include?("x")&&(!arrival_time.empty?||!leaving_time.empty?||!remark.empty?)     
                      # インスタンスを作成する　!-->
                      timecard = @user.timecards.build  
