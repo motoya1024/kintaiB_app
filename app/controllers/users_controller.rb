@@ -43,7 +43,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)   
     if @user.save
-       flash[:success] = "プロフィールを更新しました。"
+       flash[:success] = "プロフィールを作成しました。"
        redirect_to root_url
     else
       render 'new'
