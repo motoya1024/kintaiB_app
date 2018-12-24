@@ -53,8 +53,8 @@
                 <% if @time_cards[index]  %>
                 　　  <!-- @time_cardsの配列の中で出社時間が登録されていたら　!-->
                     <% if(@time_cards[index].arrival_time) %>
-                        <td><%= @time_cards[index].arrival_time.strftime("%H") %></td>  <!--arrival_time H !-->
-                        <td><%= @time_cards[index].arrival_time.strftime("%M") %></td>  <!--arrival_time Ｍ !-->
+                        <td><%= @time_cards[index].arrival_time.hour %></td>  <!--arrival_time H !-->
+                        <td><%= @time_cards[index].arrival_time.min %></td>  <!--arrival_time Ｍ !-->
                         <td></td>   <!--出社ボタン !-->
                     <% else %> 
                         <!-- @time_cardsの配列の中で出社時間が登録されていなかったら　!-->
@@ -62,7 +62,7 @@
                         <td></td>   <!--arrival_time Ｍ !-->
                         <!-- 本日の日付だったら退社時間を登録　!-->
                         <td>    <!--出社ボタン !-->
-                            <% if date == Time.current.strftime("%Y-%m-%d").to_date  %>
+                            <% if date == Date.current  %>
                                 <%= form_for @timecard do |f| %>
                                 <%= hidden_field_tag :id, @user.id %>
                                 <%= f.submit yield(:arrival_time), name:"arrival_time", class: "btn btn-primary" %>
@@ -72,8 +72,8 @@
                     <% end  %>  
                     <!-- @time_cardsの配列の中で退社時間が登録されていたら　!-->
                     <% if @time_cards[index].leaving_time %>
-                        <td><%= @time_cards[index].leaving_time.strftime("%H") %></td>  <!--leaving_time H !-->
-                        <td><%= @time_cards[index].leaving_time.strftime("%M") %></td>  <!--leaving_time M !-->
+                        <td><%= @time_cards[index].leaving_time.hour %></td>  <!--leaving_time H !-->
+                        <td><%= @time_cards[index].leaving_time.min %></td>  <!--leaving_time M !-->
                         <td></td>   <!--退社ボタン !-->
                         <td><!--在社時間 !-->
                             <% if !@time_cards[index].arrival_time.nil? %>
@@ -86,7 +86,7 @@
                         <td></td>   <!--leaving_time M !-->
                         <!-- 本日の日付だったら退社時間を登録　!-->
                         <td>    <!--退社ボタン !-->
-                            <% if date == Time.current.strftime("%Y-%m-%d").to_date&&!@time_cards[index].arrival_time.nil? %>
+                            <% if date == Date.current&&!@time_cards[index].arrival_time.nil? %>
                                 <%= form_for(@timecard,url:leavingupdate_path) do |f| %>
                                     <%= hidden_field_tag :id, @user.id %>
                                     <%= f.submit yield(:leaving_time), name:"leaving_time", class: "btn btn-primary" %>
@@ -102,7 +102,7 @@
                     <td></td>   <!--arrival_time Ｍ !-->
                     <!-- 本日の日付だったら退社時間を登録　!-->
                     <td>    <!--出社ボタン !-->
-                    <% if(date == Time.current.strftime("%Y-%m-%d").to_date) %>
+                    <% if(date == Date.current) %>
                         <%= form_for @timecard do |f| %>
                             <%= hidden_field_tag :id, @user.id %>
                             <%= f.submit yield(:arrival_time), name:"arrival_time", class: "btn btn-primary" %>

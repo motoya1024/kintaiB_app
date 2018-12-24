@@ -10,6 +10,7 @@ class TimecardsController < ApplicationController
         if params[:month]
           @this_month = params[:month].to_date
         end
+        
         year = @this_month.year
         month = @this_month.month
         
@@ -29,8 +30,9 @@ class TimecardsController < ApplicationController
     end
     
     def show
-      
+   
         @this_month = params[:month] ? params[:month].to_date : Date.current
+   
         year = @this_month.year
         month = @this_month.month
         
