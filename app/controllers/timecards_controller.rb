@@ -61,9 +61,9 @@ class TimecardsController < ApplicationController
          else
               @timecard = timecard
          end
-        
+         #render plain: today.strftime('%Y-%m-%d %H:%M').inspect
          if params[:arrival_time]
-            @timecard.arrival_time = today
+            @timecard.arrival_time = today.strftime('%Y-%m-%d %H:%M')
             @timecard.year = today.year
             @timecard.month = today.month
             @timecard.day = today.strftime('%-d').to_i
@@ -83,7 +83,7 @@ class TimecardsController < ApplicationController
          @timecard = Timecard.where("user_id = ? and arrival_time BETWEEN ? AND ?",@user.id,Time.zone.now.beginning_of_day,Time.zone.now.end_of_day).first
          
          if params[:leaving_time]
-            @timecard.leaving_time = Time.zone.now
+            @timecard.leaving_time = Time.zone.now.strftime('%Y-%m-%d %H:%M')
          end
       
          if @timecard.save
