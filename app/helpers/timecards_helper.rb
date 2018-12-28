@@ -14,12 +14,12 @@ module TimecardsHelper
       end
     
     # 00:00 形式の勤務合計事件を返す
-      def total_basictime_str(basic_time,time_cards)
-        hour = basic_time.hour
-        minute = basic_time.min/60.to_f
-        times = hour + minute
-        total_time = times * time_cards.count
-        BigDecimal(total_time.to_s).floor(2).to_f
+      def total_basictime_str(basic_time,account_count)
+          hour = basic_time.hour
+          minute = basic_time.min/60.to_f
+          times = hour + minute
+          total_time = times * account_count
+          BigDecimal(total_time.to_s).floor(2).to_f
       end
       
       

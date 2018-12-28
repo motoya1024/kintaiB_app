@@ -17,16 +17,6 @@ class TimecardsController < ApplicationController
         #当月分のタイムカードを取得
         @time_cards = monthly_time_cards(@user, year, month)
         
-        @timecards = Array.new
-        # 当月分のタイムカードをループでとりだしてnilの場合はインスタンスを生成
-        @time_cards.each do |time_card|
-           if !time_card.nil?
-               @timecards.push(time_card)
-           else
-               @timecards.push(@user.timecards.build)
-           end
-        end
-        
     end
     
     def show

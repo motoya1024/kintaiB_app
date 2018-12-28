@@ -20,7 +20,7 @@
             <td>所属 <%= @user.department %></td>
             <td>名前 <%= @user.name %></td>
             <td>コード </td>
-            <td>出勤日数 <%= @arrival_count %></td>
+            <td>出勤日数 <%= @arrival_count %>日</td>
             <td>締め <%=@this_month.end_of_month.strftime("%m/%d") %></td>
         </tr>
     </table>    
@@ -118,10 +118,12 @@
             </tr> 
     　　 <% end %>
             <tr>
-                <!-- 基本合計時間  -->
+                <!-- 総合勤務時間  -->
                 <td colspan="2"><% if @user.basic_time %>
-                                    <%= total_basictime_str(@user.basic_time,@time_cards)%>
-                                <% end %>   
+                                    <%= total_basictime_str(@user.basic_time,@arrival_count)%>
+                                <% else %>   
+                                     0
+                                <% end %>       
                 </td>
                 <td colspan="6"></td>
                 <!-- 在社合計時間  -->

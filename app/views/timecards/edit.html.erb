@@ -15,13 +15,13 @@
             <th>在社時間</th>
             <th>備考</th>
         </tr>
-         <!-- 指定された月の日をtimecard履歴をループする　!-->
-         <% @timecards.each_with_index do |timecard,index|  %>
+         <!-- 指定された月の日をtimecard配列をループする　!-->
+         <% @time_cards.each_with_index do |timecard,index|  %>
             <tr>
             　　<td><%= Date.new(@this_month.year,@this_month.month,index+1).strftime("%m/%d")%> </td>
                 <td><%= %w(日 月 火 水 木 金 土)[Date.new(@this_month.year,@this_month.month,index+1).wday]%></td>
                 <!-- timecard登録データがある場合　!-->
-                <% if !timecard.id.nil? %>
+                <% if !timecard.nil? %>
                    <%= fields_for "timecards[]", timecard do |fi| %>    
                      <td><% if !timecard.arrival_time.nil? %>
                              <%= fi.time_field :arrival_time ,value: timecard.arrival_time.strftime("%H:%M") %>
@@ -42,7 +42,7 @@
                      <td><%= fi.text_field :remark %></td>
                   <% end %>
                 <% else %>
-                <!-- timecardがない（新規にインスタンスを生成した場合）　!-->
+                <!-- timecardがnilの場合）　!-->
                    <td><input type="time" id="timecards_<%=index+1%>_arrival_time" name="timecards[x<%=index+1%>][arrival_time]" /></td>
                    <td><input type="time" id="timecards_<%=index+1%>_leaving_time" name="timecards[x<%=index+1%>][leaving_time]" /></td>
                    <td></td>
