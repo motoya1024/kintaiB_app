@@ -41,10 +41,10 @@ class UsersController < ApplicationController
   end
   
   def create
-    @user = User.new(user_params)   
+    @user = User.new(user_params) 
     if @user.save
-       flash[:success] = "プロフィールを作成しました。"
-       redirect_to root_url
+       log_in @user
+       redirect_to timecard_path @user
     else
       render 'new'
     end
