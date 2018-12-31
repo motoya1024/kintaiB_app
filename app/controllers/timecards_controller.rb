@@ -35,7 +35,7 @@ class TimecardsController < ApplicationController
         # 当月分のタイムカードを配列の取得（ない日はnil)
         @time_cards = monthly_time_cards(@user, year, month)
         # 出勤日数
-        @arrival_count = @time_cards.count { |i| i != nil && i.leaving_time !=nil }
+        @arrival_count = @time_cards.count { |i| i != nil && i.leaving_time !=nil&& i.arrival_time !=nil}
         
     end
     
