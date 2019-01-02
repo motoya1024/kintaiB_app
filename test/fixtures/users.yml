@@ -2,37 +2,37 @@ michael:
   name: Michael Example
   email: michael@example.com
   password_digest: <%= User.digest('password') %>
+  department: 営業
+  basic_time: 2001-10-01 12:20:00
+  specifed_time: 2001-10-01 14:20:00
   admin: true
-  activated: true
-  activated_at: <%= Time.zone.now %>
+
 
 archer:
   name: Sterling Archer
   email: duchess@example.gov
   password_digest: <%= User.digest('password') %>
-  activated: true
-  activated_at: <%= Time.zone.now %>
+  basic_time: 2001-10-01 12:20:00
+  specifed_time: 2001-10-01 14:20:00
+  department: 営業
+
 
 lana:
   name: Lana Kane
   email: hands@example.gov
   password_digest: <%= User.digest('password') %>
-  activated: true
-  activated_at: <%= Time.zone.now %>
+  department: 営業
+  basic_time: 2001-10-01 12:20:00
+  specifed_time: 2001-10-01 14:20:00
+
 
 malory:
   name: Malory Archer
   email: boss@example.gov
   password_digest: <%= User.digest('password') %>
-  activated: true
-  activated_at: <%= Time.zone.now %>
-  
-non_activated:
-  name: Non Activated
-  email: non_activated@example.gov
-  password_digest: <%= User.digest('password') %>
-  activated: false
-  activated_at: <%= Time.zone.now %>  
+  department: 営業
+  basic_time: 2001-10-01 12:20:00
+  specifed_time: 2001-10-01 14:20:00
   
 
 <% 30.times do |n| %>
@@ -40,6 +40,7 @@ user_<%= n %>:
   name:  <%= "User #{n}" %>
   email: <%= "user-#{n}@example.com" %>
   password_digest: <%= User.digest('password') %>
-  activated: true
-  activated_at: <%= Time.zone.now %>
+  department: 営業
+  basic_time: 2001-10-01 12:20:00
+  specifed_time: 2001-10-01 14:20:00
 <% end %>

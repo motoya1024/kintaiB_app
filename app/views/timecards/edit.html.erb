@@ -36,7 +36,7 @@
                          <% end %>
                      </td>
                      <td><% if !timecard.leaving_time.nil?&&!timecard.arrival_time.nil? %>
-                             <%= time_diff_str(timecard.leaving_time, timecard.arrival_time)%>
+                             <%= time_diff_str(timecard.leaving_time, timecard.arrival_time)%> <!--在社時間 !-->
                          <% end %>
                      </td>
                      <td><%= fi.text_field :remark %></td>

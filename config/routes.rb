@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-
-  get  '/signup',  to: 'users#new'
-  post '/signup',  to: 'users#create'
   
   resources :users do
     get 'information', on: :member
@@ -12,11 +9,8 @@ Rails.application.routes.draw do
    
   post '/leavingupdate',  to: 'timecards#leaving_update'
   post '/update_all', to: 'timecards#update_all'
-  resources :users do
-    member do
-      get :following, :followers
-    end
-  end
+  
+
 
   root 'static_pages#home'
   get    '/login',   to: 'sessions#new'

@@ -8,10 +8,10 @@
         <tr>
             <td><span id="prev_month"><%= link_to '←', timecard_path(month: @this_month<<1) %></span><%= @this_month.strftime("%Y年%m月") %> 時間管理表<span id="next_month"><%= link_to '→', timecard_path(month: @this_month>>1) %></span></td>
             <td>指定勤務時間 <% if @user.specifed_time %>
-                                    <%= decimal_time(@user.specifed_time) %>
+                                    <%= decimal_time(@user.specifed_time) %> <!--10進数表記　-->
                              <% end %>
             </td> <!--10進数表記　-->
-            <td colspan="2">基本時間 <% if @user.specifed_time %>
+            <td colspan="2">基本時間 <% if @user.basic_time %>
                                         <%= decimal_time(@user.basic_time) %></td> <!--10進数表記　-->
                                      <% end %>
             <td>初日 <%=@this_month.beginning_of_month.strftime("%m/%d") %></td>
