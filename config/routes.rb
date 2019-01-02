@@ -9,8 +9,6 @@ Rails.application.routes.draw do
    
   post '/leavingupdate',  to: 'timecards#leaving_update'
   post '/update_all', to: 'timecards#update_all'
-  
-
 
   root 'static_pages#home'
   get    '/login',   to: 'sessions#new'

@@ -63,7 +63,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     if @user.update_attributes(user_params)
       flash[:success] = "プロフィールを更新しました。"
-      redirect_to @user
+      redirect_to edit_user_path @user
     else
       render 'edit'
     end
