@@ -12,15 +12,45 @@ class Timecard < ApplicationRecord
       self.where("user_id = ? and year = ? and month = ?", user.id, year, month).all
     end
     
+    #出社時間が退社時間より後の時間だった場合のエラーの配列
     def self.leaving_time_is_later_than_arrival_time(timecards,error)
         timecards.keys.each do |id|
           arrival_time = timecards[id]["arrival_time"]
           leaving_time = timecards[id]["leaving_time"]
              if !arrival_time.empty?&&!leaving_time.empty?
-                 if arrival_time > leaving_time
+                 if arrival_time >= leaving_time
                     error.push("error")
                  end
              end
+        end
+    end
+    
+    #当日は、出社時間と退社時間の両方入力があった場合のみ編集
+    def self.today_is_both_leaving_time_and_arrival_time(user,timecards,this_month)
+        if this_month.to_date.year == Date.current.year && this_month.to_date.month == Date.current.month
+            error = Array.new
+            today_timecard = self.where("user_id = ? and year = ? and month = ? and day =?", user.id, Date.current.year, Date.current.month,Date.current.day).first
+            if today_timecard
+               time = timecards["#{today_timecard[:id]}"]
+            else
+               time = timecards["x#{Date.current.day}"] 
+            end
+            
+            if today_timecard.nil? 
+                if !time["leaving_time"].empty? || !time["arrival_time"].empty?
+                     error.push("error")
+                end
+            elsif !today_timecard.nil?&&(today_timecard.arrival_time.nil?&&today_timecard.leaving_time.nil?)
+                if !time["leaving_time"].empty? || !time["arrival_time"].empty?
+                     error.push("error")
+                end
+            elsif !today_timecard.nil?&&(today_timecard.arrival_time&&today_timecard.leaving_time.nil?)
+                if (today_timecard.arrival_time.strftime("%H:%M") != time["arrival_time"])
+                     error.push("error")
+                elsif (today_timecard.arrival_time.strftime("%H:%M") == time["arrival_time"])&&!time["leaving_time"].empty?
+                     error.push("error")
+                end
+            end
         end
     end
     
@@ -34,8 +64,5 @@ class Timecard < ApplicationRecord
           end
         end
         
-        
-        
-        
-        
+
 end

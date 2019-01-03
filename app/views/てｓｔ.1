@@ -57,3 +57,21 @@
                  timecard.save
              end
          end    
+         
+         
+         
+         if !time["arrival_time"].empty?  
+                if today_timecard.nil? 
+                     error.push("error")
+                elsif !today_timecard.nil?&&(today_timecard.arrival_time.nil?&&today_timecard.leaving_time.nil?)
+                     error.push("error")
+                elsif !today_timecard.nil?&&(today_timecard.arrival_time&&today_timecard.leaving_time.nil?)
+                    if today_timecard.arrival_time.strftime("%H:%M") != time["arrival_time"]
+                         error.push("error")
+                    end
+                end
+            elsif !time["leaving_time"].empty?  
+                if today_timecard.nil? || (!today_timecard.nil?&&(today_timecard.arrival_time.nil?||today_timecard.leaving_time.nil?))
+                     error.push("error")
+                end
+            end

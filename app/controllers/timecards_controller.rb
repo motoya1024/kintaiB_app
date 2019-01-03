@@ -17,16 +17,19 @@ class TimecardsController < ApplicationController
         #当月分のタイムカードを取得
         @time_cards = monthly_time_cards(@user, year, month)
         
+        render :layout => "edit_layout"
+        
     end
     
     def show
-   
+        
         @this_month = params[:month] ? params[:month].to_date : Date.current
    
         year = @this_month.year
         month = @this_month.month
         
         @user = User.find(params[:id])
+     
         @admin_user = User.find_by(admin: true)
         
         #timecardのインスタンスを作成（新規登録のため）
@@ -79,20 +82,25 @@ class TimecardsController < ApplicationController
     end
     
     def update_all
-    
+        
       @user = User.find(params[:id])
+        
+      today_timecard = Timecard.where("user_id = ? and year = ? and month = ? and day =?", @user.id, Date.current.year, Date.current.month,Date.current.day).first
+  
       @this_month = params[:month]
-    
-      error = Array.new
-        #出社時間が退社時間より後の時間だった場合のエラーの配列
-      Timecard.leaving_time_is_later_than_arrival_time(params[:timecards],error)
+      #出社時間が退社時間より後の時間だった場合のエラーの配列
+      later_error = Array.new
+      Timecard.leaving_time_is_later_than_arrival_time(params[:timecards],later_error)
+      
+      #当日は、出社時間と退社時間が入力済みの場合、編集可能
+      today_error = Timecard.today_is_both_leaving_time_and_arrival_time(@user,params[:timecards],@this_month)
+      #render plain: params[:timecards].inspect
       
       day = 0
-      if error.count == 0
+      if later_error.count == 0 && today_error == nil
         # timecard送信データのキー値（id)をループする　!-->
           params[:timecards].keys.each do |id|
               day+=1   
-              
               arrival_time = params[:timecards][id]["arrival_time"]
               leaving_time = params[:timecards][id]["leaving_time"]
               remark = params[:timecards][id]["remark"]
@@ -107,7 +115,7 @@ class TimecardsController < ApplicationController
                      timecard = @user.timecards.build  
                 end 
                 
-                if Date.new(@this_month.to_date.year,@this_month.to_date.month,day) < Date.current
+               if Date.new(@this_month.to_date.year,@this_month.to_date.month,day) < Date.current
                     #timecardが存在したら    
                     if timecard
                          #出社時間は入力されていたら
@@ -137,20 +145,29 @@ class TimecardsController < ApplicationController
                          timecard.save
                      end    
                 else
-                     if timecard 
-                         timecard.year = @this_month.to_date.year
-                         timecard.month = @this_month.to_date.month
-                         timecard.day = day
-                         timecard.remark = remark
-                         timecard.save
-                     end 
+                    if timecard 
+                        if !arrival_time.present? && !leaving_time.present?
+                            timecard.year = @this_month.to_date.year
+                            timecard.month = @this_month.to_date.month
+                            timecard.day = day
+                            timecard.remark = remark
+                            timecard.save
+                        end
+                    end 
                 end
            end
-           redirect_to timecard_path(@user)
+          redirect_to timecard_path(@user)
        else
-         flash[:danger] = "退社時間は出社時間より後の時間にして下さい。"
-         redirect_to edit_timecard_path(@user,month:@this_month)
-       end
+         flash[:danger] = Array.new
+         if later_error.count != 0
+             flash[:danger] << '退社時間は、出社時間より後の時間にして下さい。</br>'
+         end
+         if today_error != nil
+             flash[:danger] << "当日は、出社時間と退社時間が入力済みの場合のみ、出社時間と退社時間の編集ができます。"
+         end
+         
+        redirect_to edit_timecard_path(@user,month:@this_month)
+      end
     end
     
     private
