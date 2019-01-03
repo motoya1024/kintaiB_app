@@ -12,17 +12,78 @@ class Timecard < ApplicationRecord
       self.where("user_id = ? and year = ? and month = ?", user.id, year, month).all
     end
     
-    #出社時間が退社時間より後の時間だった場合のエラーの配列
-    def self.leaving_time_is_later_than_arrival_time(timecards,error)
-        timecards.keys.each do |id|
-          arrival_time = timecards[id]["arrival_time"]
-          leaving_time = timecards[id]["leaving_time"]
-             if !arrival_time.empty?&&!leaving_time.empty?
-                 if arrival_time >= leaving_time
-                    error.push("error")
+     #出社時間が退社時間より後の時間だった場合のエラーの配列
+    def self.leaving_time_is_later_than_arrival_time(timecards,this_month,error)
+         if Date.new(this_month.to_date.year,this_month.to_date.month) < Date.new(Date.current.year,Date.current.month) 
+             timecards.keys.each do |id|
+                 arrival_time = timecards[id]["arrival_time"]
+                 leaving_time = timecards[id]["leaving_time"]
+                 if !arrival_time.empty?&&!leaving_time.empty?
+                     if arrival_time >= leaving_time
+                        error.push("error")
+                     end
                  end
              end
-        end
+         elsif Date.new(this_month.to_date.year,this_month.to_date.month) == Date.new(Date.current.year,Date.current.month)
+            timecards.keys.each do |id|
+                if !id.include?("x")
+                     timecard = self.find(id)  
+                     if timecard.day < Date.current.day
+                        arrival_time = timecards[id]["arrival_time"]
+                         leaving_time = timecards[id]["leaving_time"]
+                         if !arrival_time.empty?&&!leaving_time.empty?
+                             if arrival_time >= leaving_time
+                                error.push("error")
+                             end
+                         end
+                     end
+                else 
+                     if id.delete("x").to_i< Date.current.day
+                         arrival_time = timecards[id]["arrival_time"]
+                         leaving_time = timecards[id]["leaving_time"]
+                         if !arrival_time.empty?&&!leaving_time.empty?
+                             if arrival_time >= leaving_time
+                                error.push("error")
+                             end
+                         end
+                     end
+                end
+            end
+         end
+    end
+    
+    #過去の、出社時間と退社時間が両方入力された場合のみ編集可能
+    def self.both_leaving_time_and_arrival_time(timecards,this_month,error)
+         if Date.new(this_month.to_date.year,this_month.to_date.month) < Date.new(Date.current.year,Date.current.month) 
+             timecards.keys.each do |id|
+                 arrival_time = timecards[id]["arrival_time"]
+                 leaving_time = timecards[id]["leaving_time"]
+                 if (!arrival_time.empty?&&leaving_time.empty?)||(arrival_time.empty?&&!leaving_time.empty?)
+                     error.push("error")
+                 end
+            end
+         elsif Date.new(this_month.to_date.year,this_month.to_date.month) == Date.new(Date.current.year,Date.current.month)
+            timecards.keys.each do |id|
+                if !id.include?("x")
+                     timecard = self.find(id)  
+                     if timecard.day < Date.current.day
+                         arrival_time = timecards[id]["arrival_time"]
+                         leaving_time = timecards[id]["leaving_time"]
+                         if (!arrival_time.empty?&&leaving_time.empty?)||(arrival_time.empty?&&!leaving_time.empty?)
+                             error.push("error")
+                         end
+                     end
+                else 
+                     if id.delete("x").to_i< Date.current.day
+                        arrival_time = timecards[id]["arrival_time"]
+                        leaving_time = timecards[id]["leaving_time"]
+                        if (!arrival_time.empty?&&leaving_time.empty?)||(arrival_time.empty?&&!leaving_time.empty?)
+                             error.push("error")
+                        end
+                     end
+                end
+            end
+         end
     end
     
     #当日は、出社時間と退社時間の両方入力があった場合のみ編集

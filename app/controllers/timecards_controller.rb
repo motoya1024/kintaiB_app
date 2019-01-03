@@ -86,18 +86,23 @@ class TimecardsController < ApplicationController
       @user = User.find(params[:id])
         
       today_timecard = Timecard.where("user_id = ? and year = ? and month = ? and day =?", @user.id, Date.current.year, Date.current.month,Date.current.day).first
-  
       @this_month = params[:month]
       #出社時間が退社時間より後の時間だった場合のエラーの配列
       later_error = Array.new
-      Timecard.leaving_time_is_later_than_arrival_time(params[:timecards],later_error)
+      Timecard.leaving_time_is_later_than_arrival_time(params[:timecards],@this_month,later_error)
       
       #当日は、出社時間と退社時間が入力済みの場合、編集可能
       today_error = Timecard.today_is_both_leaving_time_and_arrival_time(@user,params[:timecards],@this_month)
       #render plain: params[:timecards].inspect
       
+      #過去は、出社時間と退社時間がともに編集画面で入力があった場合のみ、編集可能
+      both_error = Array.new
+      Timecard.both_leaving_time_and_arrival_time(params[:timecards],@this_month,both_error)
+      
+      #render plain: both_error.inspect
+      
       day = 0
-      if later_error.count == 0 && today_error == nil
+      if later_error.count == 0 && today_error == nil && both_error.count == 0
         # timecard送信データのキー値（id)をループする　!-->
           params[:timecards].keys.each do |id|
               day+=1   
@@ -119,11 +124,8 @@ class TimecardsController < ApplicationController
                     #timecardが存在したら    
                     if timecard
                          #出社時間は入力されていたら
-                         if !arrival_time.empty?
+                         if !arrival_time.empty?&&!leaving_time.empty?
                              timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,arrival_time.to_time.hour,arrival_time.to_time.min)
-                         end
-                         #退社時間は入力されていたら
-                         if !leaving_time.empty?
                              timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,leaving_time.to_time.hour,leaving_time.to_time.min)
                          end
                          timecard.year = @this_month.to_date.year
@@ -165,8 +167,11 @@ class TimecardsController < ApplicationController
          if today_error != nil
              flash[:danger] << "当日は、出社時間と退社時間が入力済みの場合のみ、出社時間と退社時間の編集ができます。"
          end
+         if both_error.count != 0
+             flash[:danger] << "出社時間と退社時間は両方入力してください。"
+         end
          
-        redirect_to edit_timecard_path(@user,month:@this_month)
+         redirect_to edit_timecard_path(@user,month:@this_month)
       end
     end
     

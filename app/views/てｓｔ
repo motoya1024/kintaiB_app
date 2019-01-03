@@ -1,44 +1,57 @@
-<% @timecards.each_with_index do |timecard,index|  %>
-     
-            <tr>
-            　　<td><%= Date.new(@this_month.year,@this_month.month,index+1).strftime("%m/%d")%> </td>
-                <td><%= %w(日 月 火 水 木 金 土)[Date.new(@this_month.year,@this_month.month,index+1).wday]%></td>
-                  <%= fields_for "timecards[]", timecard do |fi| %>
-                     <td><% if !timecard.arrival_time.nil? %>
-                             <%= fi.time_field :arrival_time ,value: timecard.arrival_time.strftime("%H:%M") %>
-                         <% else %>
-                             <%= fi.time_field :arrival_time %>
-                         <% end %>
-                         </td>
-                     <td><% if !timecard.leaving_time.nil? %>
-                             <%= fi.time_field :leaving_time ,value: timecard.leaving_time.strftime("%H:%M") %>
-                         <% else %>
-                             <%= fi.time_field :leaving_time %>
-                         <% end %>
-                         </td>
-                     <td><% if !timecard.leaving_time.nil?&&!timecard.arrival_time.nil? %>
-                             <%= time_diff_str(timecard.leaving_time, timecard.arrival_time)%>
-                         <% end %>
-                     </td>
-                     <td><%= fi.text_field :remark %></td>
-                  <% end %>
-             </tr> 
-         <% end %>
+ if later_error.count == 0 && today_error == nil
+        # timecard送信データのキー値（id)をループする　!-->
+          params[:timecards].keys.each do |id|
+              day+=1   
+              arrival_time = params[:timecards][id]["arrival_time"]
+              leaving_time = params[:timecards][id]["leaving_time"]
+              remark = params[:timecards][id]["remark"]
          
-         
-               puts day
-        if !id.include?("x")
-             timecard= Timecard.find(id)
-             timecard.arrival_time = @timecard[id]["arrival_time"]
-             timecard.leaving_time = @timecard[id]["leaving_time"]
-             timecard.remark = @timecard[id]["remark"]
-             timecard.save
-         #else
-             
-             timecard = @user.timecards.build
-            timecard.arrival_time = @timecard[id]["arrival_time"]
-            timecard.leaving_time = @timecard[id]["leaving_time"]
-            timecard.remark = @timecard[id]["remark"]
-=end            timecard.save
-        # end
-      end
+               # 既存データを編集する場合　!-->
+                if !id.include?("x")
+                     # id値からtimecardデータを取得する　!-->
+                     timecard= Timecard.find(id)
+                # 新規登録で出社時間及び退社時間及び備考欄のいずれかに記入があった場合       
+                elsif id.include?("x")&&(!arrival_time.empty?||!leaving_time.empty?||!remark.empty?)     
+                     # インスタンスを作成する　!-->
+                     timecard = @user.timecards.build  
+                end 
+                
+               if Date.new(@this_month.to_date.year,@this_month.to_date.month,day) < Date.current
+                    #timecardが存在したら    
+                    if timecard
+                         #出社時間は入力されていたら
+                         if !arrival_time.empty?&&!leaving_time.empty?
+                             timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,arrival_time.to_time.hour,arrival_time.to_time.min)
+                             timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,leaving_time.to_time.hour,leaving_time.to_time.min)
+                         end
+                         timecard.year = @this_month.to_date.year
+                         timecard.month = @this_month.to_date.month
+                         timecard.day = day
+                         timecard.remark = remark
+                         timecard.save
+                    end  
+                elsif  Date.new(@this_month.to_date.year,@this_month.to_date.month,day) == Date.current  
+                     if timecard 
+                        if !timecard.arrival_time.nil? && !timecard.leaving_time.nil?
+                             timecard.arrival_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,arrival_time.to_time.hour,arrival_time.to_time.min)
+                             timecard.leaving_time = Time.zone.local(@this_month.to_date.year,@this_month.to_date.month,day,leaving_time.to_time.hour,leaving_time.to_time.min)
+                        end
+                         timecard.year = @this_month.to_date.year
+                         timecard.month = @this_month.to_date.month
+                         timecard.day = day
+                         timecard.remark = remark
+                         timecard.save
+                     end    
+                else
+                    if timecard 
+                        if !arrival_time.present? && !leaving_time.present?
+                            timecard.year = @this_month.to_date.year
+                            timecard.month = @this_month.to_date.month
+                            timecard.day = day
+                            timecard.remark = remark
+                            timecard.save
+                        end
+                    end 
+                end
+           end
+          redirect_to timecard_path(@user)
