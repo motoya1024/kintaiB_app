@@ -28,8 +28,8 @@ class Timecard < ApplicationRecord
             timecards.keys.each do |id|
                 if !id.include?("x")
                      timecard = self.find(id)  
-                     if timecard.day < Date.current.day
-                        arrival_time = timecards[id]["arrival_time"]
+                     if timecard.day <= Date.current.day
+                         arrival_time = timecards[id]["arrival_time"]
                          leaving_time = timecards[id]["leaving_time"]
                          if !arrival_time.empty?&&!leaving_time.empty?
                              if arrival_time >= leaving_time
@@ -38,7 +38,7 @@ class Timecard < ApplicationRecord
                          end
                      end
                 else 
-                     if id.delete("x").to_i< Date.current.day
+                     if id.delete("x").to_i<= Date.current.day
                          arrival_time = timecards[id]["arrival_time"]
                          leaving_time = timecards[id]["leaving_time"]
                          if !arrival_time.empty?&&!leaving_time.empty?
