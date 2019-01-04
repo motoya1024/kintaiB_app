@@ -23,30 +23,41 @@
                 <!-- timecard登録データがある場合　!-->
                 <% if !timecard.nil? %>
                    <%= fields_for "timecards[]", timecard do |fi| %>    
-                     <td><% if !timecard.arrival_time.nil? %>
-                             <%= fi.time_field :arrival_time ,value: timecard.arrival_time.strftime("%H:%M") %>
-                         <% else %>
-                             <%= fi.time_field :arrival_time %>
-                         <% end %>
-                     </td>
-                     <td><% if !timecard.leaving_time.nil? %>
-                             <%= fi.time_field :leaving_time ,value: timecard.leaving_time.strftime("%H:%M") %>
-                         <% else %>
-                             <%= fi.time_field :leaving_time %>
-                         <% end %>
-                     </td>
-                     <td><% if !timecard.leaving_time.nil?&&!timecard.arrival_time.nil? %>
-                             <%= time_diff_str(timecard.leaving_time, timecard.arrival_time)%> <!--在社時間 !-->
-                         <% end %>
-                     </td>
-                     <td><%= fi.text_field :remark %></td>
+                      <% if Date.new(@this_month.year,@this_month.month,index+1) <= Date.current %>
+                         <td><% if !timecard.arrival_time.nil? %>
+                                 <%= fi.time_field :arrival_time ,value: timecard.arrival_time.strftime("%H:%M") %>
+                             <% else %>
+                                 <%= fi.time_field :arrival_time %>
+                             <% end %>
+                         </td>
+                         <td><% if !timecard.leaving_time.nil? %>
+                                 <%= fi.time_field :leaving_time ,value: timecard.leaving_time.strftime("%H:%M") %>
+                             <% else %>
+                                 <%= fi.time_field :leaving_time %>
+                             <% end %>
+                         </td>
+                         <td><% if !timecard.leaving_time.nil?&&!timecard.arrival_time.nil? %>
+                                 <%= time_diff_str(timecard.leaving_time, timecard.arrival_time)%> <!--在社時間 !-->
+                             <% end %>
+                         </td>
+                      <% else %>    
+                         <td></td>
+                         <td></td>
+                         <td></td>
+                      <% end %>
+                         <td><%= fi.text_field :remark %></td>
                   <% end %>
                 <% else %>
                 <!-- timecardがnilの場合）　!-->
-                   <td><input type="time" id="timecards_<%=index+1%>_arrival_time" name="timecards[x<%=index+1%>][arrival_time]" /></td>
-                   <td><input type="time" id="timecards_<%=index+1%>_leaving_time" name="timecards[x<%=index+1%>][leaving_time]" /></td>
-                   <td></td>
-                   <td><input type="text" id="timecards_<%=index+1%>_remark" name="timecards[x<%=index+1%>][remark]" /></td>
+                    <% if Date.new(@this_month.year,@this_month.month,index+1) <= Date.current %>
+                       <td><input type="time" id="timecards_<%=index+1%>_arrival_time" name="timecards[x<%=index+1%>][arrival_time]" /></td>
+                       <td><input type="time" id="timecards_<%=index+1%>_leaving_time" name="timecards[x<%=index+1%>][leaving_time]" /></td>
+                    <% else %>
+                       <td></td>
+                       <td></td>
+                    <% end %>
+                       <td></td>
+                       <td><input type="text" id="timecards_<%=index+1%>_remark" name="timecards[x<%=index+1%>][remark]" /></td>
                 <% end %>  
              </tr> 
          <% end %>

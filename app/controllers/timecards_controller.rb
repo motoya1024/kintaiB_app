@@ -87,6 +87,7 @@ class TimecardsController < ApplicationController
         
       today_timecard = Timecard.where("user_id = ? and year = ? and month = ? and day =?", @user.id, Date.current.year, Date.current.month,Date.current.day).first
       @this_month = params[:month]
+      
       #出社時間が退社時間より後の時間だった場合のエラーの配列
       later_error = Array.new
       Timecard.leaving_time_is_later_than_arrival_time(params[:timecards],@this_month,later_error)
@@ -99,10 +100,9 @@ class TimecardsController < ApplicationController
       both_error = Array.new
       Timecard.both_leaving_time_and_arrival_time(params[:timecards],@this_month,both_error)
       
-      #render plain: both_error.inspect
-      
+      #render plain:later_today_error.count.inspect
       day = 0
-      if later_error.count == 0 && today_error == nil && both_error.count == 0
+      if later_error.count == 0 && today_error == nil && both_error.count == 0 
         # timecard送信データのキー値（id)をループする　!-->
           params[:timecards].keys.each do |id|
               day+=1   
@@ -110,18 +110,27 @@ class TimecardsController < ApplicationController
               leaving_time = params[:timecards][id]["leaving_time"]
               remark = params[:timecards][id]["remark"]
          
-               # 既存データを編集する場合　!-->
+                # 既存データを編集する場合　!-->
                 if !id.include?("x")
                      # id値からtimecardデータを取得する　!-->
                      timecard= Timecard.find(id)
                 # 新規登録で出社時間及び退社時間及び備考欄のいずれかに記入があった場合       
-                elsif id.include?("x")&&(!arrival_time.empty?||!leaving_time.empty?||!remark.empty?)     
-                     # インスタンスを作成する　!-->
-                     timecard = @user.timecards.build  
-                end 
+                elsif id.include?("x")
+                    if Date.new(@this_month.to_date.year,@this_month.to_date.month,day) > Date.current
+                        if !remark.empty?
+                            # インスタンスを作成する　!-->
+                            timecard = @user.timecards.build  
+                        end
+                    else
+                        if (!arrival_time.empty?||!leaving_time.empty?||!remark.empty?)
+                            # インスタンスを作成する　!-->
+                            timecard = @user.timecards.build  
+                        end 
+                    end
+                end
                 
                if Date.new(@this_month.to_date.year,@this_month.to_date.month,day) < Date.current
-                    #timecardが存在したら    
+                    #timecardが存在したら   
                     if timecard
                          #出社時間は入力されていたら
                          if !arrival_time.empty?&&!leaving_time.empty?
@@ -158,19 +167,19 @@ class TimecardsController < ApplicationController
                     end 
                 end
            end
-          redirect_to timecard_path(@user)
+         redirect_to timecard_path(@user)
        else
          flash[:danger] = Array.new
          if later_error.count != 0
              flash[:danger] << '退社時間は、出社時間より後の時間にして下さい。</br>'
          end
          if today_error != nil
-             flash[:danger] << "当日は、出社時間と退社時間が入力済みの場合のみ、出社時間と退社時間の編集ができます。"
+             flash[:danger] << "本日は、出社時間と退社時間が入力済みの場合のみ、出社時間と退社時間の編集ができます。"
          end
          if both_error.count != 0
-             flash[:danger] << "出社時間と退社時間は両方入力してください。"
+             flash[:danger] << "昨日以前の出退社時間を編集する時は、出社時間と退社時間を両方入力してください。"
          end
-         
+ 
          redirect_to edit_timecard_path(@user,month:@this_month)
       end
     end

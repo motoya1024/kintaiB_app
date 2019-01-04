@@ -19,7 +19,7 @@ class Timecard < ApplicationRecord
                  arrival_time = timecards[id]["arrival_time"]
                  leaving_time = timecards[id]["leaving_time"]
                  if !arrival_time.empty?&&!leaving_time.empty?
-                     if arrival_time >= leaving_time
+                     if arrival_time > leaving_time
                         error.push("error")
                      end
                  end
@@ -32,7 +32,7 @@ class Timecard < ApplicationRecord
                          arrival_time = timecards[id]["arrival_time"]
                          leaving_time = timecards[id]["leaving_time"]
                          if !arrival_time.empty?&&!leaving_time.empty?
-                             if arrival_time >= leaving_time
+                             if arrival_time > leaving_time
                                 error.push("error")
                              end
                          end
@@ -42,7 +42,7 @@ class Timecard < ApplicationRecord
                          arrival_time = timecards[id]["arrival_time"]
                          leaving_time = timecards[id]["leaving_time"]
                          if !arrival_time.empty?&&!leaving_time.empty?
-                             if arrival_time >= leaving_time
+                             if arrival_time > leaving_time
                                 error.push("error")
                              end
                          end
