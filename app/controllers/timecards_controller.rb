@@ -167,6 +167,7 @@ class TimecardsController < ApplicationController
                     end 
                 end
            end
+         flash[:success] = '勤怠を編集しました。'  
          redirect_to timecard_path(@user)
        else
          flash[:danger] = Array.new
